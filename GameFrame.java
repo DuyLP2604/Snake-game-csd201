@@ -3,6 +3,7 @@ import javax.swing.*;
 public class GameFrame extends JFrame {
     private MainMenu menuPanel;
     private GamePanel gamePanel;
+    private int selectedLevel = 1;
 
     public GameFrame() {
         setTitle("Snake Game OOP");
@@ -16,13 +17,20 @@ public class GameFrame extends JFrame {
         setContentPane(menuPanel);
         setVisible(true);
     }
+    public void setSelectedLevel(int level) {
+        this.selectedLevel = level;
+    }
+
+    public int getSelectedLevel() {
+        return this.selectedLevel;
+    }
 
     // Hàm chuyển sang GamePanel
     public void switchToGamePanel() {
-        gamePanel = new GamePanel(this);
+        gamePanel = new GamePanel(this); // GamePanel sẽ gọi getSelectedLevel() từ Frame này
         setContentPane(gamePanel);
         revalidate();
-        gamePanel.requestFocusInWindow(); // để nhận phím điều khiển
+        gamePanel.requestFocusInWindow();
     }
 
     // Hàm quay lại menu 
@@ -35,4 +43,5 @@ public class GameFrame extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GameFrame::new);
     }
+
 }

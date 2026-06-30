@@ -32,7 +32,8 @@ public class Food {
     }
 
 
-    public void spawn(Snake snake) {
+    // Sửa đổi hàm trong Food.java nhận thêm đối số int[][] map
+    public void spawn(Snake snake, int[][] map) {
         boolean validPosition = false;
         int newX = 0, newY = 0;
 
@@ -40,16 +41,26 @@ public class Food {
             newX = random.nextInt(cols);
             newY = random.nextInt(rows);
             validPosition = true;
+
+            // 1. Kiểm tra trùng thân rắn
             for (Point p : snake.getBody()) {
                 if (p.x == newX && p.y == newY) {
                     validPosition = false;
                     break;
                 }
             }
+
+            // 2. Kiểm tra trùng ô tường (giá trị bằng 1)
+            if (validPosition && map[newY][newX] == 1) {
+                validPosition = false;
+            }
         }
 
-        x = newX;
-        y = newY;
+        this.x = newX;
+        this.y = newY;
+
+        // ... Giữ nguyên phần tính toán tỷ lệ FoodType ngẫu nhiên ở phía sau của bạn ...
+
 
 
         int rand = random.nextInt(100);

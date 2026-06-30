@@ -57,23 +57,16 @@ public class Snake {
             case LEFT:  newHead.x -= 1; break;
         }
 
- 
         body.add(0, newHead);
 
-  
         boolean ate = eat(food);
 
-        // tăng đốt mượt
         if (pendingGrowth > 0) {
             pendingGrowth--;
         } else {
             if (!body.isEmpty()) body.remove(body.size() - 1);
         }
 
-        // va chạm
-        if (checkSelfCollision() || checkWallCollision(GamePanel.COLS, GamePanel.ROWS)) {
-            alive = false;
-        }
     }
 
 
@@ -105,9 +98,18 @@ public class Snake {
     }
 
 
-    public boolean checkWallCollision(int width, int height) {
+    // Sửa đổi hàm trong Snake.java từ (int width, int height) thành nhận vào mảng map[][]
+    public boolean checkWallCollision(int[][] map, int width, int height) {
         Point head = body.get(0);
-        return (head.x < 0 || head.y < 0 || head.x >= width || head.y >= height);
+
+        // Kiểm tra nếu đầu rắn vượt quá biên màn hình ngoài
+        if (head.x < 0 || head.y < 0 || head.x >= width || head.y >= height) {
+            return true;
+        }
+
+        // Kiểm tra nếu vị trí đầu rắn đè lên ô có giá trị = 1 trong ma trận
+        // Lưu ý: map[hàng][cột] tương ứng với map[head.y][head.x]
+        return map[head.y][head.x] == 1;
     }
 
 
@@ -130,6 +132,10 @@ public class Snake {
         }
     }
 
+    public int getDirection() {
+        return this.direction;
+    }
+
 
     public boolean eat(Food food) {
         if (food == null) return false;
@@ -145,5 +151,17 @@ public class Snake {
             return true;
         }
         return false;
+    }
+    // Hàm gán ngược hướng di chuyển khi Undo
+    public void setDirectionDirect(int dir) {
+        this.direction = dir;
+    }
+
+    // Hàm khôi phục lại cơ thể rắn từ bản sao lưu
+    public void setBody(List<Point> newBody) {
+        this.body = new ArrayList<>();
+        for (Point p : newBody) {
+            this.body.add(new Point(p.x, p.y));
+        }
     }
 }
