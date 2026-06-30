@@ -30,7 +30,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Tải hình ảnh (Nếu chưa có file ảnh, hệ thống sẽ tự vẽ các ô màu xám)
         try {
-            wallImage = new ImageIcon("C:\\Users\\TAN LOI\\Downloads\\wall.jpg").getImage();
+            wallImage = new ImageIcon("resources/image/wall.jpg").getImage();
             floorImage = new ImageIcon("resources/floor.png").getImage();
         } catch (Exception e) {
             System.out.println("Không thể tải ảnh bản đồ, hệ thống sẽ tự dùng màu khối!");
