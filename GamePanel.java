@@ -5,9 +5,7 @@ import javax.swing.*;
 
 public class GamePanel extends JPanel implements KeyListener {
 
-    public static final int TILE_SIZE = 15;
-    public static final int COLS = 51;
-    public static final int ROWS = 38;
+
 
     private java.util.Stack<GameState> history = new java.util.Stack<>();
     private Snake snake;
@@ -17,55 +15,41 @@ public class GamePanel extends JPanel implements KeyListener {
     private final GameFrame parent;
     private final ScoreManager scores;
 
-    private int[][] currentMap;
-    private Image wallImage;
-    private Image floorImage;
+    private MapManager mapManager;
 
     public GamePanel(GameFrame parent) {
         this.parent = parent;
         this.scores = new ScoreManager();
 
         // Khởi tạo ma trận động
-        this.currentMap = new int[ROWS][COLS];
+        mapManager = new MapManager(parent.getSelectedLevel());
 
-        // Tải hình ảnh (Nếu chưa có file ảnh, hệ thống sẽ tự vẽ các ô màu xám)
-        try {
-            wallImage = new ImageIcon("resources/image/wall.jpg").getImage();
-            floorImage = new ImageIcon("resources/floor.png").getImage();
-        } catch (Exception e) {
-            System.out.println("Không thể tải ảnh bản đồ, hệ thống sẽ tự dùng màu khối!");
-        }
 
-        setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
+        setPreferredSize(
+                new Dimension(
+                        GameConfig.COLS * GameConfig.TILE_SIZE,
+                        GameConfig.ROWS * GameConfig.TILE_SIZE));
+
         setBackground(Color.DARK_GRAY);
+
         setFocusable(true);
+
         addKeyListener(this);
 
-        initMapData(); // Tạo khung tường bao quanh ma trận
+        requestFocusInWindow();
         startGame();
     }
 
-    // Sửa đổi hàm initMapData() trong GamePanel.java
-    private void initMapData() {
-        int level = parent.getSelectedLevel(); // Lấy số Level từ GameFrame
-        int[][] sourceMap;
-
-        // Lựa chọn map nguồn từ cấu hình tương ứng với Level
-        if (level == 2) {
-            sourceMap = GameConfig.MAP_LEVEL_2;
-        } else {
-            sourceMap = GameConfig.MAP_LEVEL_1;
-        }
-
-        // Sao chép sâu ma trận cấu hình sang ma trận động chạy trong màn chơi
-        for (int r = 0; r < ROWS; r++) {
-            System.arraycopy(sourceMap[r], 0, this.currentMap[r], 0, COLS);
-        }
-    }
 
     public void startGame() {
-        Point start = new Point(COLS / 2, ROWS / 2);
-        snake = new Snake(start, 3, Snake.RIGHT, 200); // Độ dài ban đầu bằng 3 để dễ thử nghiệm Undo
+        Point start = mapManager.getSpawnPoint();
+
+        snake = new Snake(
+                start,
+                3,
+                Snake.RIGHT,
+                200
+        );
         spawnFoodA();
         scores.resetScore();
         running = true;
@@ -78,10 +62,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private void spawnFoodA() {
         if (foodA == null) {
-            foodA = new Food(COLS, ROWS, TILE_SIZE);
+            foodA = new Food(
+                    GameConfig.COLS,
+                    GameConfig.ROWS,
+                    GameConfig.TILE_SIZE
+            );
         }
         // ĐÃ SỬA: Truyền currentMap vào hàm spawn của Food để né sinh mồi đè lên ô tường biên
-        foodA.spawn(snake, currentMap);
+        foodA.spawn(snake, mapManager.getMap());
     }
 
     @Override
@@ -89,34 +77,11 @@ public class GamePanel extends JPanel implements KeyListener {
         super.paintComponent(g);
 
         // 1. VẼ BẢN ĐỒ (MAP)
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLS; c++) {
-                int xPixel = c * TILE_SIZE;
-                int yPixel = r * TILE_SIZE;
-
-                // Vẽ nền đất/cỏ nếu có ảnh
-                if (floorImage != null) {
-                    g.drawImage(floorImage, xPixel, yPixel, TILE_SIZE, TILE_SIZE, this);
-                }
-
-                // Nếu ô ma trận là tường (bằng 1)
-                if (currentMap[r][c] == 1) {
-                    if (wallImage != null) {
-                        g.drawImage(wallImage, xPixel, yPixel, TILE_SIZE, TILE_SIZE, this);
-                    } else {
-                        // Nếu không tìm thấy ảnh, tự động vẽ khối vuông xám có viền đen
-                        g.setColor(Color.GRAY);
-                        g.fillRect(xPixel, yPixel, TILE_SIZE, TILE_SIZE);
-                        g.setColor(Color.BLACK);
-                        g.drawRect(xPixel, yPixel, TILE_SIZE, TILE_SIZE);
-                    }
-                }
-            }
-        }
+        mapManager.draw(g);
 
         // 2. VẼ RẮN VÀ THỨC ĂN ĐÈ LÊN TRÊN MAP
         if (snake != null) {
-            snake.draw(g, TILE_SIZE);
+            snake.draw(g, GameConfig.TILE_SIZE);
         }
         if (foodA != null) {
             foodA.draw(g);
@@ -126,6 +91,14 @@ public class GamePanel extends JPanel implements KeyListener {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 14));
         g.drawString("Score: " + scores.getCurrentScore(), 25, 30);
+        g.drawString(
+                "Gate : " +
+                        (mapManager.isGateOpened() ?
+                                "OPEN" :
+                                "LOCKED"),
+                25,
+                70
+        );
         g.drawString("Steps Saved: " + history.size() + "/20", 25, 50);
 
         // Hiển thị chữ GAME OVER nếu thua cuộc
@@ -196,13 +169,36 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Xử lý va chạm và ăn mồi sau khi tiến bước
         if (moved) {
-            if (snake.checkWallCollision(currentMap, COLS, ROWS) || snake.checkSelfCollision()) {
+            if (snake.checkWallCollision(
+                    mapManager.getMap(),
+                    GameConfig.COLS,
+                    GameConfig.ROWS
+            ) || snake.checkSelfCollision()) {
                 running = false;
             }
 
-            if (foodA != null && foodA.isEaten(snake.getHead())) {
+            if(foodA != null && foodA.isEaten(snake.getHead())){
+
                 scores.increaseScore(1);
+
+                mapManager.updateGate(scores.getCurrentScore());
+
                 spawnFoodA();
+
+            }
+            if(mapManager.isGateOpened()){
+
+                Point head = snake.getHead();
+
+                if(mapManager.isGate(head.x, head.y)){
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Level Complete!"
+                    );
+
+                }
+
             }
 
             repaint();
@@ -220,10 +216,16 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     private void restartGame() {
+        mapManager.reset(parent.getSelectedLevel());
         startGame();
     }
 
-    @Override public void keyReleased(KeyEvent e) { }
-    @Override public void keyTyped(KeyEvent e) { }
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
 
 }

@@ -22,7 +22,7 @@ public class MainMenu extends JPanel implements ActionListener {
         setBackground(COLOR_BG);
 
         // 1. Cấu hình ComboBox (Level Selector)
-        String[] options = {"Level 1: Classic Border", "Level 2: Twin Pillars"};
+        String[] options = {"Level 1: Forest", "Level 2: Ocean", "Level 3: Desert"};
         levelSelector = new JComboBox<>(options);
         levelSelector.setPreferredSize(new Dimension(240, 42));
         levelSelector.setFont(new Font("Consolas", Font.BOLD, 15));
