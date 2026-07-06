@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="34ffd499-b5a7-4170-932c-2c041c87995a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/out/production/snake-game-pro192-main/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/snake-game-pro192-main/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LevelCard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LevelSelectPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/desert/level3_preview.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/forest/level1_preview.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/ocean/level2_preview.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/GamePanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/MainMenu.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +64,13 @@
     "project.structure.side.proportion": "0.0"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\CSD\snake-game-csd201-main\resources\desert" />
+      <recent name="E:\CSD\snake-game-csd201-main\resources\ocean" />
+      <recent name="E:\CSD\snake-game-csd201-main\resources\forest" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="34ffd499-b5a7-4170-932c-2c041c87995a" name="Changes" comment="" />

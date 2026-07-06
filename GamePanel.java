@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         snake = new Snake(
                 start,
-                3,
+                5,
                 Snake.RIGHT,
                 200
         );
@@ -101,17 +101,20 @@ public class GamePanel extends JPanel implements KeyListener {
             g2.setComposite(
                     AlphaComposite.getInstance(
                             AlphaComposite.SRC_OVER,
-                            0.35f
+                            0.8f
                     )
             );
 
             // color for the shortest path
             switch (parent.getSelectedLevel()){
-                case 1, 2:
-                    g2.setColor(Color.RED);
+                case 1:
+                    g2.setColor(new Color(255, 80, 80));
+                    break;
+                case 2:
+                    g2.setColor(new Color(255, 255, 0));
                     break;
                 case 3:
-                    g2.setColor(Color.BLUE);
+                    g2.setColor(new Color(0, 255, 255));
                     break;
             }
 
@@ -126,7 +129,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 int size = GameConfig.TILE_SIZE / 3;
 
-                g2.fillOval(
+                g2.fillRect(
                         p.x * GameConfig.TILE_SIZE
                                 + GameConfig.TILE_SIZE / 3,
                         p.y * GameConfig.TILE_SIZE
@@ -406,6 +409,7 @@ public class GamePanel extends JPanel implements KeyListener {
             history.pop();
         }
 
+        showHint = false;
         return moved;
     }
 
