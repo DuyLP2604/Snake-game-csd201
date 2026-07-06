@@ -6,6 +6,12 @@ import javax.swing.*;
 public class GamePanel extends JPanel implements KeyListener {
 
 
+    private List<Point> shortestPath = null;
+    private int hintsRemaining = GameConfig.MAX_HINTS;
+    private boolean showHint = false;
+
+    private String statusMessage = null;
+    private Timer statusTimer;
 
     private java.util.Stack<GameState> history = new java.util.Stack<>();
     private Snake snake;
@@ -56,6 +62,11 @@ public class GamePanel extends JPanel implements KeyListener {
 
         history.clear(); // Xóa sạch lịch sử khi chơi lại
 
+        // Reset Hint
+        hintsRemaining = GameConfig.MAX_HINTS;
+        showHint = false;
+        shortestPath = null;
+
         requestFocusInWindow();
         repaint();
     }
@@ -74,10 +85,98 @@ public class GamePanel extends JPanel implements KeyListener {
 
     @Override
     protected void paintComponent(Graphics g) {
+
         super.paintComponent(g);
 
         // 1. VẼ BẢN ĐỒ (MAP)
         mapManager.draw(g);
+
+        // Draw hint
+        if (showHint && shortestPath != null) {
+
+            Graphics2D g2 = (Graphics2D) g;
+
+            Composite oldComposite = g2.getComposite();
+
+            g2.setComposite(
+                    AlphaComposite.getInstance(
+                            AlphaComposite.SRC_OVER,
+                            0.35f
+                    )
+            );
+
+            // color for the shortest path
+            switch (parent.getSelectedLevel()){
+                case 1, 2:
+                    g2.setColor(Color.RED);
+                    break;
+                case 3:
+                    g2.setColor(Color.BLUE);
+                    break;
+            }
+
+            // max steps for hint
+            int maxSteps = 60;
+
+            for (int i = 0;
+                 i < Math.min(maxSteps, shortestPath.size());
+                 i++) {
+
+                Point p = shortestPath.get(i);
+
+                int size = GameConfig.TILE_SIZE / 3;
+
+                g2.fillOval(
+                        p.x * GameConfig.TILE_SIZE
+                                + GameConfig.TILE_SIZE / 3,
+                        p.y * GameConfig.TILE_SIZE
+                                + GameConfig.TILE_SIZE / 3,
+                        size,
+                        size
+                );
+            }
+
+            g2.setComposite(oldComposite);
+        }
+
+        // show notif for no path found because of dead end
+        if (statusMessage != null) {
+
+            Graphics2D g2 = (Graphics2D) g;
+
+            String text = statusMessage;
+
+            g2.setFont(new Font("Arial", Font.BOLD, 16));
+            FontMetrics fm = g2.getFontMetrics();
+
+            int paddingX = 14;
+            int paddingY = 8;
+
+            int textWidth = fm.stringWidth(text);
+            int textHeight = fm.getHeight();
+
+            int boxW = textWidth + paddingX * 2;
+            int boxH = textHeight + paddingY * 2;
+
+            int x = 170;
+            int y = 35;
+
+            // nền mờ
+            g2.setColor(new Color(0, 0, 0, 170));
+            g2.fillRoundRect(x, y, boxW, boxH, 16, 16);
+
+            // viền nhẹ cho đẹp
+            g2.setColor(new Color(255, 255, 255, 60));
+            g2.drawRoundRect(x, y, boxW, boxH, 16, 16);
+
+            // text
+            g2.setColor(new Color(255, 220, 0));
+            g2.drawString(
+                    text,
+                    x + paddingX,
+                    y + paddingY + fm.getAscent()
+            );
+        }
 
         // 2. VẼ RẮN VÀ THỨC ĂN ĐÈ LÊN TRÊN MAP
         if (snake != null) {
@@ -89,17 +188,41 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // 3. VẼ GIAO DIỆN ĐIỂM SỐ VÀ TRẠNG THÁI UNDO
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 14));
-        g.drawString("Score: " + scores.getCurrentScore(), 25, 30);
+
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+
         g.drawString(
-                "Gate : " +
-                        (mapManager.isGateOpened() ?
-                                "OPEN" :
-                                "LOCKED"),
-                25,
-                70
+                "Level: " + parent.getSelectedLevel(),
+                20,
+                30
         );
-        g.drawString("Steps Saved: " + history.size() + "/20", 25, 50);
+
+        g.drawString(
+                "Score: " + scores.getCurrentScore(),
+                120,
+                30
+        );
+
+        g.drawString(
+                "Hints: " + hintsRemaining + "/" + GameConfig.MAX_HINTS + "(Press H)",
+                250,
+                30
+        );
+
+        g.drawString(
+                "Undo: " + history.size() + "/20",
+                470,
+                30
+        );
+
+        g.drawString(
+                "Gate: " +
+                        (mapManager.isGateOpened()
+                                ? "OPEN"
+                                : "LOCKED"),
+                620,
+                30
+        );
 
         // Hiển thị chữ GAME OVER nếu thua cuộc
         if (!running) {
@@ -131,21 +254,33 @@ public class GamePanel extends JPanel implements KeyListener {
             saveCurrentState();
             snake.setDirectionDirect(Snake.UP);
             snake.move(foodA);
+
+            showHint = false;
+
             moved = true;
         } else if (k == KeyEvent.VK_DOWN && currentDir != Snake.UP) {
             saveCurrentState();
             snake.setDirectionDirect(Snake.DOWN);
             snake.move(foodA);
+
+            showHint = false;
+
             moved = true;
         } else if (k == KeyEvent.VK_LEFT && currentDir != Snake.RIGHT) {
             saveCurrentState();
             snake.setDirectionDirect(Snake.LEFT);
             snake.move(foodA);
+
+            showHint = false;
+
             moved = true;
         } else if (k == KeyEvent.VK_RIGHT && currentDir != Snake.LEFT) {
             saveCurrentState();
             snake.setDirectionDirect(Snake.RIGHT);
             snake.move(foodA);
+
+            showHint = false;
+
             moved = true;
         }
 
@@ -167,8 +302,39 @@ public class GamePanel extends JPanel implements KeyListener {
             if (parent != null) parent.switchToMenu();
         }
 
+        // Show hint
+        if (k == KeyEvent.VK_H) {
+
+            if (hintsRemaining > 0) {
+
+                List<Point> path = PathFinder.findPath(
+                        snake,
+                        foodA,
+                        mapManager
+                );
+
+                if (path != null && !path.isEmpty()) {
+
+                    shortestPath = path;
+                    showHint = true;
+                    hintsRemaining--;
+
+                } else {
+
+                    showStatusMessage(
+                            "No path available!. Try using Undo to escape dead end"
+                    );
+                }
+
+                repaint();
+            }
+
+            return;
+        }
+
         // Xử lý va chạm và ăn mồi sau khi tiến bước
         if (moved) {
+
             if (snake.checkWallCollision(
                     mapManager.getMap(),
                     GameConfig.COLS,
@@ -228,4 +394,22 @@ public class GamePanel extends JPanel implements KeyListener {
     public void keyTyped(KeyEvent e) {
     }
 
+    private void showStatusMessage(String msg) {
+
+        statusMessage = msg;
+
+        if (statusTimer != null) {
+            statusTimer.stop();
+        }
+
+        statusTimer = new Timer(5000, e -> {
+            statusMessage = null;
+            repaint();
+        });
+
+        statusTimer.setRepeats(false);
+        statusTimer.start();
+
+        repaint();
+    }
 }
