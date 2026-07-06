@@ -50,8 +50,9 @@ public class Food {
                 }
             }
 
-            // 2. Kiểm tra trùng ô tường (giá trị bằng 1)
-            if (validPosition && map[newY][newX] == 1) {
+            // 2. Kiểm tra trùng ô block
+            if (validPosition &&
+                    GameConfig.isObstacle(map[newY][newX])) {
                 validPosition = false;
             }
         }

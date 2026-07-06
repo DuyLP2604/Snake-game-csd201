@@ -1,3 +1,5 @@
+import java.util.Set;
+
 public class GameConfig {
 
     public static final int TILE_SIZE = 15;
@@ -10,6 +12,14 @@ public class GameConfig {
 
     // Điểm để mở cổng
     public static final int GATE_SCORE = 20;
+
+    public static final Set<Integer> OBSTACLE_TILES = Set.of(
+            1, 2, 5, 8, 10, 11, 12, 13, 14, 15
+    );
+
+    public static boolean isObstacle(int tile) {
+        return OBSTACLE_TILES.contains(tile);
+    }
 
     /*
         0 = Ground

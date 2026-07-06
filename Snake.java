@@ -44,29 +44,46 @@ public class Snake {
     public Point getHead() { return body.get(0); }
 
     // Tick di chuyển
-    public void move(Food food) {
-        if (!alive) return;
+    public boolean move(
+            Food food,
+            int[][] map,
+            int width,
+            int height) {
+
+        if (!alive) return false;
 
         Point head = body.get(0);
         Point newHead = new Point(head);
 
         switch (direction) {
-            case UP:    newHead.y -= 1; break;
-            case RIGHT: newHead.x += 1; break;
-            case DOWN:  newHead.y += 1; break;
-            case LEFT:  newHead.x -= 1; break;
+            case UP    -> newHead.y--;
+            case RIGHT -> newHead.x++;
+            case DOWN  -> newHead.y++;
+            case LEFT  -> newHead.x--;
+        }
+
+        // Cannot move to the border
+        if (newHead.x < 0 || newHead.y < 0
+                || newHead.x >= width || newHead.y >= height) {
+            return false;
+        }
+
+        // Cannot move to obstacle
+        if (GameConfig.isObstacle(map[newHead.y][newHead.x])) {
+            return false;
         }
 
         body.add(0, newHead);
 
-        boolean ate = eat(food);
+        eat(food);
 
         if (pendingGrowth > 0) {
             pendingGrowth--;
         } else {
-            if (!body.isEmpty()) body.remove(body.size() - 1);
+            body.remove(body.size() - 1);
         }
 
+        return true;
     }
 
 
@@ -107,9 +124,11 @@ public class Snake {
             return true;
         }
 
-        // Kiểm tra nếu vị trí đầu rắn đè lên ô có giá trị = 1 trong ma trận
+        // Kiểm tra nếu vị trí đầu rắn đè lên ô block trong ma trận
         // Lưu ý: map[hàng][cột] tương ứng với map[head.y][head.x]
-        return map[head.y][head.x] == 1;
+        return GameConfig.OBSTACLE_TILES.contains(
+                map[head.y][head.x]
+        );
     }
 
 
@@ -170,3 +189,4 @@ public class Snake {
         }
     }
 }
+
