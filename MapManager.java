@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.HashMap;
 import javax.swing.*;
 
@@ -28,10 +29,17 @@ public class MapManager {
             String line;
             int row = 0;
             while ((line = br.readLine()) != null && row < GameConfig.ROWS) {
-                for (int col = 0; col < Math.min(line.length(), GameConfig.COLS); col++) {
-                    char ch = line.charAt(col);
-                    if (Character.isDigit(ch)) {
-                        map[row][col] = ch - '0';
+                // Mỗi ô là một số nguyên (0, 1, 2, ..., 10, 11, ...), ngăn cách bởi dấu phẩy.
+                // Cho phép id tile > 9, không còn giới hạn 1 ký tự/ô như trước.
+                String[] tokens = line.trim().split(",");
+                for (int col = 0; col < Math.min(tokens.length, GameConfig.COLS); col++) {
+                    String tok = tokens[col].trim();
+                    if (!tok.isEmpty()) {
+                        try {
+                            map[row][col] = Integer.parseInt(tok);
+                        } catch (NumberFormatException nfe) {
+                            map[row][col] = 0; // token lỗi -> coi như nền
+                        }
                     }
                 }
                 row++;
@@ -59,11 +67,11 @@ public class MapManager {
     // ================== NẠP TILESET THEO TỪNG LEVEL ==================
     // Mỗi level dùng 1 ảnh asset pack riêng, sprite được cắt theo toạ độ
     // pixel thủ công (vì các ảnh gốc không phải lưới đều).
-    // Đặt 3 file ảnh này cùng thư mục chạy chương trình (ngang hàng với
-    // thư mục "resources"):
-    //   ForestAssets.png   (Level 1)
-    //   OceanTileset.png   (Level 2)
-    //   DesertTiles.png    (Level 3)
+    // Đặt 3 file ảnh vào đúng thư mục con trong "resources" (giống cấu
+    // trúc resources/maps đang có):
+    //   resources/forest/free_pixel_16_woods.png   (Level 1 - Easy)
+    //   resources/ocean/OceanTileset.png            (Level 2 - Medium)
+    //   resources/desert/DesertTiles.png            (Level 3 - Hard)
 
     private void loadTileSet(int level) {
         switch (level) {
@@ -71,22 +79,6 @@ public class MapManager {
             case 3 -> loadDesertTileSet();
             default -> loadForestTileSet();
         }
-    }
-
-    private void loadForestTileSet() {
-        tileSet = new TileSet("resources/forest/ForestAssets.png");
-        int s = GameConfig.TILE_SIZE;
-
-        tileImages.put(0, TileSet.solidTile(s, new Color(94, 168, 96)));     // GROUND - nền cỏ (không có sprite nền phù hợp, dùng màu đặc)
-        tileImages.put(1, tileSet.getRegion(1616, 82, 1716, 328));           // WALL   - cột đá lớn
-        tileImages.put(2, tileSet.getRegion(84, 528, 304, 768));            // TREE   - cây to
-        tileImages.put(3, tileImages.get(0));                                // SPAWN  - ẩn, vẽ như nền cỏ
-        tileImages.put(4, TileSet.solidTile(s, new Color(255, 213, 79)));    // GATE   - ô vàng đánh dấu cổng
-        tileImages.put(5, tileSet.getRegion(1177, 887, 1715, 975));         // ROCK   - cụm đá phủ rêu
-        tileImages.put(6, tileSet.getRegion(106, 776, 280, 971));           // BUSH   - bụi cây tròn
-        tileImages.put(7, tileSet.getRegion(1417, 826, 1503, 839));         // FLOWER - hoa nhỏ
-        tileImages.put(8, tileSet.getRegion(1010, 784, 1601, 856));         // WATER  - vũng nước
-        tileImages.put(9, tileSet.getRegion(84, 457, 148, 500));            // DECOR  - bụi cỏ nhỏ
     }
 
     private void loadOceanTileSet() {
@@ -103,6 +95,30 @@ public class MapManager {
         tileImages.put(7, tileSet.getRegion(210, 782, 240, 820));    // FLOWER - san hô tím
         tileImages.put(8, tileSet.getRegion(40, 1732, 216, 1888));   // WATER  - mặt nước biển
         tileImages.put(9, tileSet.getRegion(112, 372, 142, 396));    // DECOR  - sỏi đá nhỏ
+    }
+
+    private void loadForestTileSet() {
+        // Bộ tileset 16x16 chuẩn (lưới đều), đẹp và tile liền mạch hơn nhiều
+        // so với ảnh preview asset pack cũ.
+        tileSet = new TileSet("resources/forest/tile.png");
+        int s = GameConfig.TILE_SIZE;
+
+        tileImages.put(0, tileSet.getRegion(245,68,260,84));      // GROUND - cỏ nền
+        tileImages.put(1, tileSet.getRegion(216,317,230,332));    // WALL   - hàng rào bụi cây (tile liền mạch, ghép sát nhau không lộ mối nối)
+        tileImages.put(2, tileSet.getRegion(342,89,359,114));     // TREE   - cây to
+        tileImages.put(3, tileImages.get(0));                        // SPAWN  - ẩn, vẽ như nền cỏ
+        tileImages.put(4, TileSet.solidTile(s, new Color(255, 213, 79))); // GATE - ô vàng đánh dấu cổng
+        tileImages.put(5, tileSet.getRegion(452,215,466,231));    // ROCK   - đá nhỏ
+        tileImages.put(6, tileSet.getRegion(450,274,465,291));     // BUSH   - bụi nhỏ
+        tileImages.put(7, tileSet.getRegion(428,273,446,291));     // FLOWER - hoa/quả nhỏ
+        tileImages.put(8, tileSet.getRegion(223,51,243,72));       // TREE ROOT - gốc cây bị chặt
+        tileImages.put(9, tileSet.getRegion(596,113,578,131));    // DECOR  - mảng đất/sỏi nhỏ
+        tileImages.put(10, tileSet.getRegion(810,100,830,121));   // TREE1  - góc trên bên trái cây to
+        tileImages.put(11, tileSet.getRegion(828,100,848,121));   // TREE2  - góc trên bên phải cây to
+        tileImages.put(12, tileSet.getRegion(810,116,830,137));   // TREE3  - góc dưới bên trái cây to
+        tileImages.put(13, tileSet.getRegion(828,116,848,137));   // TREE4  - góc dưới bên phải cây to
+        tileImages.put(14, tileSet.getRegion(810,140,830,162));   // TREE4  - gốc cây bên trái cây to
+        tileImages.put(15, tileSet.getRegion(828,140,848,162));   // TREE4  - gốc cây bên phải cây to
     }
 
     private void loadDesertTileSet() {
@@ -149,7 +165,7 @@ public class MapManager {
 
     public boolean isDecoration(int x, int y) {
         int t = map[y][x];
-        // Không thể đi xuyên bụi cỏ, hoa, đá
+        // Có thể đi xuyên bụi cỏ, hoa.
         return t == 7 || t == 8 || t == 9;
     }
 
