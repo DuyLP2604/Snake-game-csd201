@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 public class MainMenu extends JPanel implements ActionListener {
     private JButton startButton, helpButton, exitButton;
     private GameFrame parentFrame;
-    private JComboBox<String> levelSelector;
 
     // Bảng màu thiết kế tối giản Neon phẳng
     private final Color COLOR_BG = new Color(18, 18, 24);
@@ -21,17 +20,7 @@ public class MainMenu extends JPanel implements ActionListener {
         setLayout(new GridBagLayout());
         setBackground(COLOR_BG);
 
-        // 1. Cấu hình ComboBox (Level Selector)
-        String[] options = {"Level 1: Forest", "Level 2: Ocean", "Level 3: Desert"};
-        levelSelector = new JComboBox<>(options);
-        levelSelector.setPreferredSize(new Dimension(240, 42));
-        levelSelector.setFont(new Font("Consolas", Font.BOLD, 15));
-        levelSelector.setBackground(COLOR_BTN_BG);
-        levelSelector.setForeground(COLOR_TEXT_GREEN);
-        levelSelector.setBorder(new LineBorder(COLOR_TEXT_GREEN, 1));
-        levelSelector.setFocusable(false);
-
-        // 2. Khởi tạo các nút bấm
+        // Khởi tạo các nút bấm
         startButton = createModernButton("START GAME");
         helpButton = createModernButton("HOW TO PLAY");
         exitButton = createModernButton("EXIT GAME");
@@ -44,29 +33,24 @@ public class MainMenu extends JPanel implements ActionListener {
         helpButton.addActionListener(this);
         exitButton.addActionListener(this);
 
-        // 3. Quy hoạch GridBagLayout độc lập theo từng dòng (Tuyệt đối không đè nút)
+        // Quy hoạch GridBagLayout độc lập theo từng dòng (Tuyệt đối không đè nút)
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ép các nút có độ rộng đồng đều nhau
 
-        // Hàng 0: Khoảng trống đệm từ tiêu đề chữ xuống (Không dùng Box dính lỗi đè)
-        gbc.gridy = 0;
-        gbc.insets = new Insets(120, 0, 15, 0); // Đẩy dòng đầu tiên xuống cách top 120px
-        add(levelSelector, gbc);
-
         // Hàng 1: Nút Start Game
-        gbc.gridy = 1;
-        gbc.insets = new Insets(10, 0, 10, 0); // Khoảng cách đều 10px giữa các hàng
+        gbc.gridy = 0;
+        gbc.insets = new Insets(80, 0, 5, 0);
         add(startButton, gbc);
 
         // Hàng 2: Nút Help
-        gbc.gridy = 2;
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.gridy = 1;
+        gbc.insets = new Insets(5, 0, 5, 0);
         add(helpButton, gbc);
 
         // Hàng 3: Nút Exit
-        gbc.gridy = 3;
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.gridy = 2;
+        gbc.insets = new Insets(5, 0, 5, 0);
         add(exitButton, gbc);
     }
 
@@ -95,9 +79,7 @@ public class MainMenu extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
-            int choice = levelSelector.getSelectedIndex() + 1;
-            parentFrame.setSelectedLevel(choice);
-            parentFrame.switchToGamePanel();
+            parentFrame.switchToLevelSelect();
         } else if (e.getSource() == helpButton) {
             UIManager.put("OptionPane.background", COLOR_BG);
             UIManager.put("Panel.background", COLOR_BG);

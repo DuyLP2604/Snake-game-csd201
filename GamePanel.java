@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         snake = new Snake(
                 start,
-                3,
+                5,
                 Snake.RIGHT,
                 200
         );
@@ -101,17 +101,20 @@ public class GamePanel extends JPanel implements KeyListener {
             g2.setComposite(
                     AlphaComposite.getInstance(
                             AlphaComposite.SRC_OVER,
-                            0.35f
+                            0.8f
                     )
             );
 
             // color for the shortest path
             switch (parent.getSelectedLevel()){
-                case 1, 2:
-                    g2.setColor(Color.RED);
+                case 1:
+                    g2.setColor(new Color(255, 80, 80));
+                    break;
+                case 2:
+                    g2.setColor(new Color(255, 255, 0));
                     break;
                 case 3:
-                    g2.setColor(Color.BLUE);
+                    g2.setColor(new Color(0, 255, 255));
                     break;
             }
 
@@ -126,7 +129,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 int size = GameConfig.TILE_SIZE / 3;
 
-                g2.fillOval(
+                g2.fillRect(
                         p.x * GameConfig.TILE_SIZE
                                 + GameConfig.TILE_SIZE / 3,
                         p.y * GameConfig.TILE_SIZE
@@ -161,15 +164,12 @@ public class GamePanel extends JPanel implements KeyListener {
             int x = 170;
             int y = 35;
 
-            // nền mờ
             g2.setColor(new Color(0, 0, 0, 170));
             g2.fillRoundRect(x, y, boxW, boxH, 16, 16);
 
-            // viền nhẹ cho đẹp
             g2.setColor(new Color(255, 255, 255, 60));
             g2.drawRoundRect(x, y, boxW, boxH, 16, 16);
 
-            // text
             g2.setColor(new Color(255, 220, 0));
             g2.drawString(
                     text,
@@ -251,37 +251,16 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Bấm phím di chuyển theo lượt (Tiến lên)
         if (k == KeyEvent.VK_UP && currentDir != Snake.DOWN) {
-            saveCurrentState();
-            snake.setDirectionDirect(Snake.UP);
-            snake.move(foodA);
-
-            showHint = false;
-
-            moved = true;
-        } else if (k == KeyEvent.VK_DOWN && currentDir != Snake.UP) {
-            saveCurrentState();
-            snake.setDirectionDirect(Snake.DOWN);
-            snake.move(foodA);
-
-            showHint = false;
-
-            moved = true;
-        } else if (k == KeyEvent.VK_LEFT && currentDir != Snake.RIGHT) {
-            saveCurrentState();
-            snake.setDirectionDirect(Snake.LEFT);
-            snake.move(foodA);
-
-            showHint = false;
-
-            moved = true;
-        } else if (k == KeyEvent.VK_RIGHT && currentDir != Snake.LEFT) {
-            saveCurrentState();
-            snake.setDirectionDirect(Snake.RIGHT);
-            snake.move(foodA);
-
-            showHint = false;
-
-            moved = true;
+            moved = tryMove(Snake.UP);
+        }
+        else if (k == KeyEvent.VK_DOWN && currentDir != Snake.UP) {
+            moved = tryMove(Snake.DOWN);
+        }
+        else if (k == KeyEvent.VK_LEFT && currentDir != Snake.RIGHT) {
+            moved = tryMove(Snake.LEFT);
+        }
+        else if (k == KeyEvent.VK_RIGHT && currentDir != Snake.LEFT) {
+            moved = tryMove(Snake.RIGHT);
         }
 
         // Nhấn phím ngược hướng di chuyển để kích hoạt UNDO (Lùi lại)
@@ -335,11 +314,7 @@ public class GamePanel extends JPanel implements KeyListener {
         // Xử lý va chạm và ăn mồi sau khi tiến bước
         if (moved) {
 
-            if (snake.checkWallCollision(
-                    mapManager.getMap(),
-                    GameConfig.COLS,
-                    GameConfig.ROWS
-            ) || snake.checkSelfCollision()) {
+            if (snake.checkSelfCollision()) {
                 running = false;
             }
 
@@ -412,4 +387,30 @@ public class GamePanel extends JPanel implements KeyListener {
 
         repaint();
     }
+
+    // check if the snake moves
+    private boolean tryMove(int newDirection) {
+
+        int oldDirection = snake.getDirection();
+
+        saveCurrentState();
+
+        snake.setDirectionDirect(newDirection);
+
+        boolean moved = snake.move(
+                foodA,
+                mapManager.getMap(),
+                GameConfig.COLS,
+                GameConfig.ROWS
+        );
+
+        if (!moved) {
+            snake.setDirectionDirect(oldDirection);
+            history.pop();
+        }
+
+        showHint = false;
+        return moved;
+    }
+
 }

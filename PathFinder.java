@@ -6,6 +6,10 @@ public class PathFinder {
     private static final int[] DX = {0, 1, 0, -1};
     private static final int[] DY = {-1, 0, 1, 0};
 
+    private static final Set<Integer> BLOCKED_TILES = Set.of(
+            1, 2, 5, 8, 10, 11, 12, 13, 14, 15
+    );
+
     public static List<Point> findPath(
             Snake snake,
             Food food,
@@ -48,8 +52,8 @@ public class PathFinder {
                     continue;
                 }
 
-                // Chỉ coi WALL (1) là vật cản
-                if (map[ny][nx] == TileType.WALL) {
+                // if it is a blocked title
+                if (GameConfig.isObstacle(map[ny][nx])) {
                     continue;
                 }
 

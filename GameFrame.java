@@ -5,6 +5,8 @@ public class GameFrame extends JFrame {
     private GamePanel gamePanel;
     private int selectedLevel = 1;
 
+    private LevelSelectPanel levelSelectPanel;
+
     public GameFrame() {
         setTitle("Snake Game OOP");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,6 +42,24 @@ public class GameFrame extends JFrame {
         menuPanel.requestFocusInWindow();
     }
 
+    public void switchToLevelSelect() {
+
+        levelSelectPanel = new LevelSelectPanel(this);
+
+        setContentPane(levelSelectPanel);
+
+        revalidate();
+        repaint();
+
+        levelSelectPanel.requestFocusInWindow();
+    }
+
+    public void startLevel(int level) {
+
+        setSelectedLevel(level);
+
+        switchToGamePanel();
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GameFrame::new);
     }

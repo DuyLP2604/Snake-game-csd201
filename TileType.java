@@ -20,4 +20,15 @@ public class TileType {
 
     public static final int DECOR = 9;
 
+    public static final int TREE_BIG_1 = 10;
+
+    public static final int TREE_BIG_2 = 11;
+
+    public  static final int TREE_BIG_3 = 12;
+
+    public static final int TREE_BIG_4 = 13;
+
+    public static final int TREE_BIG_5 = 14;
+
+    public static final int TREE_BIG_6 = 15;
 }
