@@ -6,6 +6,8 @@ public class GameConfig {
 
     public static final int ROWS = 38;
 
+    public static final int MAX_HINTS = 10;
+
     // Điểm để mở cổng
     public static final int GATE_SCORE = 20;
 

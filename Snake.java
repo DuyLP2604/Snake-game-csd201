@@ -116,7 +116,12 @@ public class Snake {
     public void draw(Graphics g, int cellSize) {
         g.setColor(Color.GREEN);
         for (Point p : body) {
-            g.fillRect(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
+            g.fillRect(
+                    p.x * cellSize,
+                    p.y * cellSize,
+                    cellSize,
+                    cellSize
+            );
         }
     }
 
