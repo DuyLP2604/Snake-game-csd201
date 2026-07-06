@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         snake = new Snake(
                 start,
-                3,
+                5,
                 Snake.RIGHT,
                 200
         );
