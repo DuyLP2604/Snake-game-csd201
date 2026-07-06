@@ -59,7 +59,7 @@ public class Food {
         this.x = newX;
         this.y = newY;
 
-        // ... Giữ nguyên phần tính toán tỷ lệ FoodType ngẫu nhiên ở phía sau của bạn ...
+        // ... Giữ nguyên phần tính toán tỷ lệ FoodType ngẫu nhiên ở phía sau
 
 
 
@@ -93,14 +93,13 @@ public class Food {
         long elapsed = now - spawnTime;
         long remain = lifetimeMs - elapsed;
 
-    
-        if (remain <= BLINK_THRESHOLD_MS) {
-            boolean show = ((now / BLINK_INTERVAL_MS) % 2) == 0;
-            if (!show) return; 
-        }
-
         g.setColor(color);
-        g.fillOval(x * tileSize, y * tileSize, tileSize, tileSize);
+        g.fillOval(
+                x * tileSize,
+                y * tileSize,
+                tileSize,
+                tileSize
+        );
     }
 
     public boolean isEaten(Point snakeHead) {
