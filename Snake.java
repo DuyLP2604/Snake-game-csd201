@@ -88,7 +88,7 @@ public class Snake {
 
 
     public void grow() {
-        pendingGrowth += 1;
+        pendingGrowth += 0;
 
     }
 
@@ -167,8 +167,8 @@ public class Snake {
         if (getHead().x == food.getX() && getHead().y == food.getY()) {
             Food.FoodType t = food.getType();
             switch (t) {
-                case NORMAL -> pendingGrowth += 1;    
-                case BONUS  -> pendingGrowth += 2;    
+                case NORMAL -> pendingGrowth += 0;
+                case BONUS  -> pendingGrowth += 0;
                 case SPEED  -> applyPermanentSpeedBoost();
                 case POISON -> alive = false;         
             }
