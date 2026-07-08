@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.HashMap;
 import javax.swing.*;
 
@@ -13,7 +12,7 @@ public class MapManager {
     private TileSet tileSet;
     // Ánh xạ loại ô (0-9, xem TileType.java) sang ảnh sprite đã cắt sẵn
     private HashMap<Integer, BufferedImage> tileImages;
-
+    private Image gateImage = new ImageIcon("gate.png").getImage();
     public MapManager(int level) {
         tileImages = new HashMap<>();
         loadTileSet(level);
@@ -181,7 +180,10 @@ public class MapManager {
     }
 
     public boolean isGate(int x, int y) {
-        return map[y][x] == 4;
+        if (gatePoint == null) return false;
+        
+        return x >= gatePoint.x && x < gatePoint.x + 3 &&
+               y >= gatePoint.y && y < gatePoint.y + 3;
     }
 
     public void reset(int level) {
@@ -198,7 +200,10 @@ public class MapManager {
                 int tileType = map[r][c];
 
                 BufferedImage img = tileImages.get(tileType);
-                if (img == null) img = tileImages.get(0); // fallback về nền
+                
+                if (img == null || tileType == 4) {
+                    img = tileImages.get(0); 
+                }
 
                 if (img != null) {
                     g.drawImage(
@@ -209,6 +214,16 @@ public class MapManager {
                     );
                 }
             }
+        }
+
+        if (gatePoint != null) {
+            int gateX = gatePoint.x * GameConfig.TILE_SIZE;
+            int gateY = gatePoint.y * GameConfig.TILE_SIZE;
+            
+            int gateSizeMultiplier = 3; 
+            int bigSize = GameConfig.TILE_SIZE * gateSizeMultiplier;
+            
+            g.drawImage(gateImage, gateX, gateY, bigSize, bigSize, null);
         }
     }
 }

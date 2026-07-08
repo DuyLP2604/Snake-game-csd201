@@ -7,16 +7,18 @@ public class GameState {
     private int currentScore;
     private Point foodAPosition;
     private Point foodBPosition;
+    private List<Food> savedFoods;
 
-    public GameState(List<Point> body, int score, Point foodA, Point foodB) {
-        // Sao chép sâu (Deep copy) danh sách tọa độ để tránh bị tham chiếu
+    public GameState(List<Point> body, int score, List<Food> activeFoods) {
         this.snakeBody = new ArrayList<>();
         for (Point p : body) {
             this.snakeBody.add(new Point(p.x, p.y));
         }
         this.currentScore = score;
-        this.foodAPosition = foodA != null ? new Point(foodA.x, foodA.y) : null;
-        this.foodBPosition = foodB != null ? new Point(foodB.x, foodB.y) : null;
+        this.savedFoods = new ArrayList<>();
+        if (activeFoods != null) {
+            this.savedFoods.addAll(activeFoods);
+        }
     }
 
     public List<Point> getSnakeBody() { return snakeBody; }

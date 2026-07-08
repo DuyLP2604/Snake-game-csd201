@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
@@ -15,7 +16,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private java.util.Stack<GameState> history = new java.util.Stack<>();
     private Snake snake;
-    private Food foodA;
+    private List<Food> activeFoods = new ArrayList<>();
+    private Timer specialFoodTimer;
 
     private boolean running = false;
     private final GameFrame parent;
@@ -56,13 +58,22 @@ public class GamePanel extends JPanel implements KeyListener {
                 Snake.RIGHT,
                 200
         );
-        spawnFoodA();
+        activeFoods.clear();
+        for (int i = 0; i < 120; i++) {
+            Food f = new Food(GameConfig.COLS, GameConfig.ROWS, GameConfig.TILE_SIZE);
+            f.spawn(snake, mapManager.getMap(), true); // true = force Normal
+            activeFoods.add(f);
+        }
+
+        // Timer thi thoảng thả thêm (Bonus, Speed, Bomb) (Mỗi 7.5 giây 1 trái)
+        if (specialFoodTimer != null) specialFoodTimer.stop();
+        specialFoodTimer = new Timer(7500, e -> spawnSpecialFood(snake.getHead()));
+        specialFoodTimer.start();
+
         scores.resetScore();
         running = true;
+        history.clear();
 
-        history.clear(); // Xóa sạch lịch sử khi chơi lại
-
-        // Reset Hint
         hintsRemaining = GameConfig.MAX_HINTS;
         showHint = false;
         shortestPath = null;
@@ -71,16 +82,15 @@ public class GamePanel extends JPanel implements KeyListener {
         repaint();
     }
 
-    private void spawnFoodA() {
-        if (foodA == null) {
-            foodA = new Food(
-                    GameConfig.COLS,
-                    GameConfig.ROWS,
-                    GameConfig.TILE_SIZE
-            );
-        }
-        // ĐÃ SỬA: Truyền currentMap vào hàm spawn của Food để né sinh mồi đè lên ô tường biên
-        foodA.spawn(snake, mapManager.getMap());
+    private void spawnSpecialFood(Point snakeHead) {
+        if (!running) return;
+        Food f = new Food(GameConfig.COLS, GameConfig.ROWS, GameConfig.TILE_SIZE);
+        
+        // Gọi hàm mới tạo bên Food.java (bán kính 12 ô xung quanh đầu rắn)
+        f.spawnSpecialNear(snake, mapManager.getMap(), snakeHead, 12); 
+        
+        activeFoods.add(f);
+        repaint();
     }
 
     @Override
@@ -182,8 +192,8 @@ public class GamePanel extends JPanel implements KeyListener {
         if (snake != null) {
             snake.draw(g, GameConfig.TILE_SIZE);
         }
-        if (foodA != null) {
-            foodA.draw(g);
+        for (Food f : activeFoods) {
+            f.draw(g);
         }
 
         // 3. VẼ GIAO DIỆN ĐIỂM SỐ VÀ TRẠNG THÁI UNDO
@@ -283,72 +293,53 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Show hint
         if (k == KeyEvent.VK_H) {
-
             if (hintsRemaining > 0) {
+                // ĐÃ SỬA: Tìm trái cây gần nhất để dẫn đường
+                Food targetFood = null;
+                double minDist = Double.MAX_VALUE;
+                for (Food f : activeFoods) {
+                    if (f.getType() == Food.FoodType.NORMAL || f.getType() == Food.FoodType.BONUS) {
+                        double dist = Point.distance(snake.getHead().x, snake.getHead().y, f.getX(), f.getY());
+                        if (dist < minDist) {
+                            minDist = dist;
+                            targetFood = f;
+                        }
+                    }
+                }
 
-                List<Point> path = PathFinder.findPath(
-                        snake,
-                        foodA,
-                        mapManager
-                );
+                List<Point> path = PathFinder.findPath(snake, targetFood, mapManager);
 
                 if (path != null && !path.isEmpty()) {
-
                     shortestPath = path;
                     showHint = true;
                     hintsRemaining--;
-
                 } else {
-
-                    showStatusMessage(
-                            "No path available!. Try using Undo to escape dead end"
-                    );
+                    showStatusMessage("No path available!. Try using Undo to escape dead end");
                 }
-
                 repaint();
             }
-
             return;
         }
 
-        // Xử lý va chạm và ăn mồi sau khi tiến bước
+        // Xử lý sau khi tiến bước
         if (moved) {
-
-            if (snake.checkSelfCollision()) {
+            // Kiểm tra tự va chạm hoặc lỡ ăn bom
+            if (snake.checkSelfCollision() || !snake.isAlive()) {
                 running = false;
             }
 
-            if(foodA != null && foodA.isEaten(snake.getHead())){
-
-                scores.increaseScore(1);
-
-                mapManager.updateGate(scores.getCurrentScore());
-
-                spawnFoodA();
-
-            }
             if(mapManager.isGateOpened()){
-
                 Point head = snake.getHead();
-
                 if(mapManager.isGate(head.x, head.y)){
-
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Level Complete!"
-                    );
-
+                    JOptionPane.showMessageDialog(this, "Level Complete!");
                 }
-
             }
-
             repaint();
         }
     }
 
     private void saveCurrentState() {
-        Point posA = foodA != null ? new Point(foodA.getX(), foodA.getY()) : null;
-        GameState state = new GameState(snake.getBody(), scores.getCurrentScore(), posA, null);
+        GameState state = new GameState(snake.getBody(), scores.getCurrentScore(), activeFoods);
         history.push(state);
 
         if (history.size() > 20) {
@@ -361,56 +352,45 @@ public class GamePanel extends JPanel implements KeyListener {
         startGame();
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e) {}
 
     private void showStatusMessage(String msg) {
-
         statusMessage = msg;
-
         if (statusTimer != null) {
             statusTimer.stop();
         }
-
         statusTimer = new Timer(5000, e -> {
             statusMessage = null;
             repaint();
         });
-
         statusTimer.setRepeats(false);
         statusTimer.start();
-
         repaint();
     }
 
-    // check if the snake moves
     private boolean tryMove(int newDirection) {
-
         int oldDirection = snake.getDirection();
-
         saveCurrentState();
-
         snake.setDirectionDirect(newDirection);
 
-        boolean moved = snake.move(
-                foodA,
-                mapManager.getMap(),
-                GameConfig.COLS,
-                GameConfig.ROWS
-        );
+        activeFoods.removeIf(Food::isExpired);
+        int prevFoodCount = activeFoods.size();
+
+        // Di chuyển và kiểm tra xem có ăn mồi trong list activeFoods hay không
+        boolean moved = snake.move(activeFoods, mapManager.getMap(), GameConfig.COLS, GameConfig.ROWS);
 
         if (!moved) {
             snake.setDirectionDirect(oldDirection);
             history.pop();
+        } else {
+            if (activeFoods.size() < prevFoodCount) {
+                scores.increaseScore(1);
+                mapManager.updateGate(scores.getCurrentScore());
+            }
         }
 
         showHint = false;
         return moved;
     }
-
 }
