@@ -61,7 +61,8 @@ public class GamePanel extends JPanel implements KeyListener {
         activeFoods.clear();
         for (int i = 0; i < 120; i++) {
             Food f = new Food(GameConfig.COLS, GameConfig.ROWS, GameConfig.TILE_SIZE);
-            f.spawn(snake, mapManager.getMap(), true); // true = force Normal
+            f.spawn(snake, mapManager.getMap(), true, activeFoods); 
+            activeFoods.add(f);
             activeFoods.add(f);
         }
 
@@ -87,8 +88,7 @@ public class GamePanel extends JPanel implements KeyListener {
         Food f = new Food(GameConfig.COLS, GameConfig.ROWS, GameConfig.TILE_SIZE);
         
         // Gọi hàm mới tạo bên Food.java (bán kính 12 ô xung quanh đầu rắn)
-        f.spawnSpecialNear(snake, mapManager.getMap(), snakeHead, 12); 
-        
+        f.spawnSpecialNear(snake, mapManager.getMap(), snakeHead, 12, activeFoods); 
         activeFoods.add(f);
         repaint();
     }
@@ -234,16 +234,31 @@ public class GamePanel extends JPanel implements KeyListener {
                 30
         );
 
-        // Hiển thị chữ GAME OVER nếu thua cuộc
         if (!running) {
+            // Tô nền tối che màn hình chơi
             g.setColor(new Color(0, 0, 0, 180));
             g.fillRect(0, 0, getWidth(), getHeight());
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 30));
-            g.drawString("GAME OVER", getWidth() / 2 - 90, getHeight() / 2);
-            g.setFont(new Font("Arial", Font.PLAIN, 16));
-            g.setColor(Color.WHITE);
-            g.drawString("Press 'R' to Restart", getWidth() / 2 - 65, getHeight() / 2 + 40);
+            
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Arial", Font.BOLD, 36));
+            String gameOverText = "GAME OVER";
+            int gameOverX = (getWidth() - g2.getFontMetrics().stringWidth(gameOverText)) / 2;
+            g2.drawString(gameOverText, gameOverX, getHeight() / 2 - 30);
+
+            g2.setColor(Color.YELLOW);
+            g2.setFont(new Font("Arial", Font.BOLD, 20));
+            String scoreText = "Your Score: " + scores.getCurrentScore();
+            int scoreX = (getWidth() - g2.getFontMetrics().stringWidth(scoreText)) / 2;
+            g2.drawString(scoreText, scoreX, getHeight() / 2 + 15);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.PLAIN, 16));
+            String restartText = "Press 'R' to Restart";
+            int restartX = (getWidth() - g2.getFontMetrics().stringWidth(restartText)) / 2;
+            g2.drawString(restartText, restartX, getHeight() / 2 + 55);
         }
     }
 
@@ -384,6 +399,8 @@ public class GamePanel extends JPanel implements KeyListener {
             snake.setDirectionDirect(oldDirection);
             history.pop();
         } else {
+            // Nếu di chuyển thành công, kiểm tra xem có ăn mồi hay không
+            activeFoods.removeIf(f -> f.getX() == snake.getHead().x && f.getY() == snake.getHead().y);
             if (activeFoods.size() < prevFoodCount) {
                 scores.increaseScore(1);
                 mapManager.updateGate(scores.getCurrentScore());

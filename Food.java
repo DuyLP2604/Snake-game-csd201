@@ -43,7 +43,7 @@ public class Food {
         this.tileSize = tileSize;
         this.random = new Random();
     }
-    public void spawn(Snake snake, int[][] map, boolean forceNormal) {
+    public void spawn(Snake snake, int[][] map, boolean forceNormal, java.util.List<Food> existingFoods) {
         boolean validPosition = false;
         int newX = 0, newY = 0;
         int attempts = 0; // Đếm số lần thử
@@ -55,18 +55,40 @@ public class Food {
             newY = random.nextInt(rows);
             validPosition = true;
 
+            // Kiểm tra xem vị trí mới có trùng với thân rắn hay không
             for (Point p : snake.getBody()) {
                 if (p.x == newX && p.y == newY) {
                     validPosition = false;
                     break;
                 }
             }
-
+            // Kiểm tra xem vị trí mới có trùng với chướng ngại vật hay không
             if (validPosition && GameConfig.isObstacle(map[newY][newX])) {
                 validPosition = false;
             }
+        
+            //né cổng
+            if (validPosition) {
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        if (map[r][c] == 4) { // 4 là ID của Cổng trong map
+                            // Nếu tọa độ mồi rơi vào ô 3x3 tính từ vị trí cổng thì hủy
+                            if (newX >= c && newX < c + 3 && newY >= r && newY < r + 3) {
+                                validPosition = false;
+                            }
+                        }
+                    }    
+                }
+            }
+            if (validPosition && existingFoods != null) {
+                for (Food f : existingFoods) {
+                    if (f.getX() == newX && f.getY() == newY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+            }
         }
-
         // Nếu kẹt quá không tìm được chỗ trống, đẩy mồi ra ngoài bản đồ và cho hết hạn luôn
         if (!validPosition) {
             this.x = -100; 
@@ -110,7 +132,7 @@ public class Food {
         spawnTime = System.currentTimeMillis();
     }
 
-    public void spawnSpecialNear(Snake snake, int[][] map, Point center, int radius) {
+    public void spawnSpecialNear(Snake snake, int[][] map, Point center, int radius, java.util.List<Food> existingFoods) {
         boolean validPosition = false;
         int newX = 0, newY = 0;
         int attempts = 0; // Đếm số lần thử
@@ -137,6 +159,25 @@ public class Food {
 
             if (validPosition && GameConfig.isObstacle(map[newY][newX])) {
                 validPosition = false;
+            }
+            if (validPosition) {
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        if (map[r][c] == 4) {
+                            if (newX >= c && newX < c + 3 && newY >= r && newY < r + 3) {
+                                validPosition = false;
+                            }
+                        }
+                    }
+                }
+            }
+            if (validPosition && existingFoods != null) {
+                for (Food f : existingFoods) {
+                    if (f.getX() == newX && f.getY() == newY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
             }
         }
 
@@ -177,7 +218,13 @@ public class Food {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(currentImage, x * tileSize, y * tileSize, tileSize, tileSize, null);
+        if (type == FoodType.POISON) {
+            int bombSize = tileSize * 2;   
+            int offset = tileSize / 2;     
+            g.drawImage(currentImage, x * tileSize - offset, y * tileSize - offset, bombSize, bombSize, null);
+        } else {
+            g.drawImage(currentImage, x * tileSize, y * tileSize, tileSize, tileSize, null);
+        }
     }
 
     public boolean isEaten(Point snakeHead) {

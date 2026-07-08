@@ -1,8 +1,8 @@
-import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 public class MainMenu extends JPanel implements ActionListener {
     private JButton startButton, helpButton, exitButton;
@@ -14,12 +14,19 @@ public class MainMenu extends JPanel implements ActionListener {
     private final Color COLOR_BTN_BG = new Color(30, 30, 45);
     private final Color COLOR_BTN_TXT = new Color(220, 220, 240);
 
+    // Khai báo biến lưu trữ hình ảnh
+    private Image backgroundImage;
+    private Image logoImage;
+
     public MainMenu(GameFrame frame) {
         this.parentFrame = frame;
 
-        setLayout(new GridBagLayout());
-        setBackground(COLOR_BG);
+        // Tải hình ảnh (Yêu cầu 2 file này nằm cùng thư mục gốc của project)
+        backgroundImage = new ImageIcon("background.jpg").getImage();
+        logoImage = new ImageIcon("snakelogo.png").getImage();
 
+        setLayout(new GridBagLayout());
+        
         // Khởi tạo các nút bấm
         startButton = createModernButton("START GAME");
         helpButton = createModernButton("HOW TO PLAY");
@@ -28,27 +35,26 @@ public class MainMenu extends JPanel implements ActionListener {
         startButton.setBorder(new LineBorder(COLOR_TEXT_GREEN, 2));
         startButton.setForeground(COLOR_TEXT_GREEN);
 
-        // Gắn sự kiện lắng nghe
         startButton.addActionListener(this);
         helpButton.addActionListener(this);
         exitButton.addActionListener(this);
 
-        // Quy hoạch GridBagLayout độc lập theo từng dòng (Tuyệt đối không đè nút)
+        // Quy hoạch GridBagLayout độc lập theo từng dòng
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ép các nút có độ rộng đồng đều nhau
 
-        // Hàng 1: Nút Start Game
+        // Nút START GAME 
         gbc.gridy = 0;
-        gbc.insets = new Insets(80, 0, 5, 0);
+        gbc.insets = new Insets(250, 0, 5, 0);
         add(startButton, gbc);
 
-        // Hàng 2: Nút Help
+        // Nút Help
         gbc.gridy = 1;
         gbc.insets = new Insets(5, 0, 5, 0);
         add(helpButton, gbc);
 
-        // Hàng 3: Nút Exit
+        // Nút Exit
         gbc.gridy = 2;
         gbc.insets = new Insets(5, 0, 5, 0);
         add(exitButton, gbc);
@@ -99,15 +105,23 @@ public class MainMenu extends JPanel implements ActionListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2d.setColor(COLOR_TEXT_GREEN);
-        g2d.setFont(new Font("Consolas", Font.BOLD, 54));
+        // 1. Vẽ Background thay vì tô màu trơn
+        if (backgroundImage != null) {
+            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        } else { // Fallback nếu không tìm thấy ảnh
+            g2d.setColor(COLOR_BG);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
 
-        FontMetrics metrics = g2d.getFontMetrics();
-        int x = (getWidth() - metrics.stringWidth("SNAKE GAME")) / 2;
-        int y = 90; // Tiêu đề nằm cố định ở cao độ 90px không bị nhảy lung tung
-
-        g2d.drawString("SNAKE GAME", x, y);
+        // 
+        if (logoImage != null) {
+            int logoWidth = 750;
+            int logoHeight = 520;
+            int x = (getWidth() - logoWidth) / 2;
+            int y = -70; // Cách đỉnh màn hình 40px
+            g2d.drawImage(logoImage, x, y, logoWidth, logoHeight, this);
+        }
     }
 }
