@@ -22,8 +22,8 @@ public class MainMenu extends JPanel implements ActionListener {
         this.parentFrame = frame;
 
         // Tải hình ảnh (Yêu cầu 2 file này nằm cùng thư mục gốc của project)
-        backgroundImage = new ImageIcon("background.jpg").getImage();
-        logoImage = new ImageIcon("snakelogo.png").getImage();
+        backgroundImage = new ImageIcon("resources/background.jpg").getImage();
+        logoImage = new ImageIcon("resources/snakelogo.png").getImage();
 
         setLayout(new GridBagLayout());
         
