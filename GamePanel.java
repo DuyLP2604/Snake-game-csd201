@@ -328,6 +328,21 @@ public class GamePanel extends JPanel implements KeyListener {
 
             return;
         }
+        // Bấm L để hiện điểm số 10 lần chơi gần nhất
+        if (k == KeyEvent.VK_L) {
+            StringBuilder sb = new StringBuilder("10 điểm gần nhất:\n");
+            List<Integer> list = scoreHistory.getRecentScores();
+            if (list.isEmpty()) {
+                sb.append("Chưa có ván nào kết thúc.");
+            } else {
+                int i = 1;
+                for (int s : list) {
+                    sb.append(i++).append(". ").append(s).append(" điểm\n");
+                }
+            }
+            JOptionPane.showMessageDialog(this, sb.toString());
+            return;
+        }
 
         // Xử lý va chạm và ăn mồi sau khi tiến bước
         if (moved) {
@@ -335,6 +350,7 @@ public class GamePanel extends JPanel implements KeyListener {
             if (snake.checkSelfCollision()) {
                 running = false;
                 gameTimer.stop();
+                scoreHistory.addScore(scores.getCurrentScore());
             }
 
             if(foodA != null && foodA.isEaten(snake.getHead())){
@@ -353,6 +369,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (mapManager.isGate(head.x, head.y)) {
                     running = false;
                     gameTimer.stop();
+                    scoreHistory.addScore(scores.getCurrentScore());
                     JOptionPane.showMessageDialog(
                             this,
                             "Level Complete! Score: " + scores.getCurrentScore() +
