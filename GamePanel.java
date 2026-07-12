@@ -20,7 +20,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean running = false;
     private final GameFrame parent;
     private final ScoreManager scores;
-
+    private final ScoreHistory scoreHistory = new ScoreHistory();
     private MapManager mapManager;
 
     public GamePanel(GameFrame parent) {
