@@ -315,10 +315,12 @@ public class GamePanel extends JPanel implements KeyListener {
         if (moved) {
 
             if (snake.checkSelfCollision()) {
+                Sound.play("music_gameover.wav");
                 running = false;
             }
 
             if(foodA != null && foodA.isEaten(snake.getHead())){
+                Sound.play("music_food.wav");
 
                 scores.increaseScore(1);
 
@@ -405,6 +407,7 @@ public class GamePanel extends JPanel implements KeyListener {
         );
 
         if (!moved) {
+            Sound.play("music_gameover.wav");
             snake.setDirectionDirect(oldDirection);
             history.pop();
         }
