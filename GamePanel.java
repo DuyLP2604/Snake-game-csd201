@@ -22,6 +22,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private final ScoreManager scores;
 
     private MapManager mapManager;
+    private javax.swing.Timer gameTimer;
+    private int elapsedSeconds = 0;
 
     public GamePanel(GameFrame parent) {
         this.parent = parent;
@@ -61,6 +63,15 @@ public class GamePanel extends JPanel implements KeyListener {
         running = true;
 
         history.clear(); // Xóa sạch lịch sử khi chơi lại
+        elapsedSeconds = 0;
+        if (gameTimer != null) gameTimer.stop();
+        gameTimer = new javax.swing.Timer(1000, e -> {
+            if (running) {
+                elapsedSeconds++;
+                repaint();
+            }
+        });
+        gameTimer.start();
 
         // Reset Hint
         hintsRemaining = GameConfig.MAX_HINTS;
@@ -223,6 +234,13 @@ public class GamePanel extends JPanel implements KeyListener {
                 620,
                 30
         );
+        int minutes = elapsedSeconds / 60;
+        int seconds = elapsedSeconds % 60;
+        g.drawString(
+                "Time: " + String.format("%02d:%02d", minutes, seconds),
+                20,
+                55
+        );
 
         // Hiển thị chữ GAME OVER nếu thua cuộc
         if (!running) {
@@ -316,6 +334,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             if (snake.checkSelfCollision()) {
                 running = false;
+                gameTimer.stop();
             }
 
             if(foodA != null && foodA.isEaten(snake.getHead())){
@@ -331,13 +350,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 Point head = snake.getHead();
 
-                if(mapManager.isGate(head.x, head.y)){
-
+                if (mapManager.isGate(head.x, head.y)) {
+                    running = false;
+                    gameTimer.stop();
                     JOptionPane.showMessageDialog(
                             this,
-                            "Level Complete!"
+                            "Level Complete! Score: " + scores.getCurrentScore() +
+                                    " - Time: " + String.format("%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)
                     );
-
                 }
 
             }

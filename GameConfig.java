@@ -16,7 +16,12 @@ public class GameConfig {
     public static final Set<Integer> OBSTACLE_TILES = Set.of(
             1, 2, 5, 8, 10, 11, 12, 13, 14, 15
     );
+    public static final int[] GATE_SCORES = { 0, 15, 25, 35 };
 
+    public static int getGateScore(int level) {
+        if (level < 1 || level >= GATE_SCORES.length) return GATE_SCORE;
+        return GATE_SCORES[level];
+    }
     public static boolean isObstacle(int tile) {
         return OBSTACLE_TILES.contains(tile);
     }

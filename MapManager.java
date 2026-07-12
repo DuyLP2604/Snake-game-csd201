@@ -9,6 +9,7 @@ public class MapManager {
     private Point spawnPoint;
     private Point gatePoint;
     private boolean gateOpened = false;
+    private int currentLevel;
 
     private TileSet tileSet;
     // Ánh xạ loại ô (0-9, xem TileType.java) sang ảnh sprite đã cắt sẵn
@@ -19,6 +20,7 @@ public class MapManager {
         loadTileSet(level);
         loadMap(level);
         findSpecialTiles();
+        this.currentLevel = level;
     }
 
     private void loadMap(int level) {
@@ -149,7 +151,7 @@ public class MapManager {
     }
 
     public void updateGate(int score) {
-        gateOpened = score >= GameConfig.GATE_SCORE;
+        gateOpened = score >= GameConfig.getGateScore(currentLevel);
     }
 
     public boolean isGateOpened() {
