@@ -8,7 +8,7 @@ public class InstructionDialog extends JDialog {
     private final GameFrame parent;
 
     public InstructionDialog(GameFrame parent) {
-        super(parent, "Have to play", true);
+        super(parent, "Rules", true);
         this.parent = parent;
 
         setSize(600,500);
