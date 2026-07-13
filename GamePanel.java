@@ -340,6 +340,7 @@ public class GamePanel extends JPanel implements KeyListener {
         if (moved) {
             // Kiểm tra tự va chạm hoặc lỡ ăn bom
             if (snake.checkSelfCollision() || !snake.isAlive()) {
+                Sound.play("music_gameover.wav");
                 running = false;
             }
 
@@ -396,12 +397,14 @@ public class GamePanel extends JPanel implements KeyListener {
         boolean moved = snake.move(activeFoods, mapManager.getMap(), GameConfig.COLS, GameConfig.ROWS);
 
         if (!moved) {
+            Sound.play("music_gameover.wav");
             snake.setDirectionDirect(oldDirection);
             history.pop();
         } else {
             // Nếu di chuyển thành công, kiểm tra xem có ăn mồi hay không
             activeFoods.removeIf(f -> f.getX() == snake.getHead().x && f.getY() == snake.getHead().y);
             if (activeFoods.size() < prevFoodCount) {
+                Sound.play("music_food.wav");
                 scores.increaseScore(1);
                 mapManager.updateGate(scores.getCurrentScore());
             }

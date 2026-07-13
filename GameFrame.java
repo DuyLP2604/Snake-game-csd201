@@ -58,7 +58,8 @@ public class GameFrame extends JFrame {
 
         setSelectedLevel(level);
 
-        switchToGamePanel();
+        //switchToGamePanel();
+        new InstructionDialog(this).setVisible(true);
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GameFrame::new);
