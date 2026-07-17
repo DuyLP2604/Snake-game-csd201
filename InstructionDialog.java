@@ -20,7 +20,7 @@ public class InstructionDialog extends JDialog {
         panel.setBackground(new Color(25,25,35));
         panel.setBorder(new EmptyBorder(20,20,20,20));
 
-        JLabel title = new JLabel("HAVE TO PLAY", SwingConstants.CENTER);
+        JLabel title = new JLabel("RULE", SwingConstants.CENTER);
 
         title.setFont(new Font("Consolas", Font.BOLD, 28));
         title.setForeground(Color.GREEN);
