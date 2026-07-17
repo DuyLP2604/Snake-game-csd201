@@ -22,8 +22,10 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean running = false;
     private final GameFrame parent;
     private final ScoreManager scores;
-
+    private final ScoreHistory scoreHistory = new ScoreHistory();
     private MapManager mapManager;
+    private javax.swing.Timer gameTimer;
+    private int elapsedSeconds = 0;
 
     public GamePanel(GameFrame parent) {
         this.parent = parent;
@@ -73,8 +75,19 @@ public class GamePanel extends JPanel implements KeyListener {
 
         scores.resetScore();
         running = true;
-        history.clear();
 
+        history.clear(); // Xóa sạch lịch sử khi chơi lại
+        elapsedSeconds = 0;
+        if (gameTimer != null) gameTimer.stop();
+        gameTimer = new javax.swing.Timer(1000, e -> {
+            if (running) {
+                elapsedSeconds++;
+                repaint();
+            }
+        });
+        gameTimer.start();
+
+        // Reset Hint
         hintsRemaining = GameConfig.MAX_HINTS;
         showHint = false;
         shortestPath = null;
@@ -233,6 +246,13 @@ public class GamePanel extends JPanel implements KeyListener {
                 620,
                 30
         );
+        int minutes = elapsedSeconds / 60;
+        int seconds = elapsedSeconds % 60;
+        g.drawString(
+                "Time: " + String.format("%02d:%02d", minutes, seconds),
+                20,
+                55
+        );
 
         if (!running) {
             // Tô nền tối che màn hình chơi
@@ -335,6 +355,21 @@ public class GamePanel extends JPanel implements KeyListener {
             }
             return;
         }
+        // Bấm L để hiện điểm số 10 lần chơi gần nhất
+        if (k == KeyEvent.VK_L) {
+            StringBuilder sb = new StringBuilder("10 điểm gần nhất:\n");
+            List<Integer> list = scoreHistory.getRecentScores();
+            if (list.isEmpty()) {
+                sb.append("Chưa có ván nào kết thúc.");
+            } else {
+                int i = 1;
+                for (int s : list) {
+                    sb.append(i++).append(". ").append(s).append(" điểm\n");
+                }
+            }
+            JOptionPane.showMessageDialog(this, sb.toString());
+            return;
+        }
 
         // Xử lý sau khi tiến bước
         if (moved) {
@@ -342,12 +377,22 @@ public class GamePanel extends JPanel implements KeyListener {
             if (snake.checkSelfCollision() || !snake.isAlive()) {
                 Sound.play("music_gameover.wav");
                 running = false;
+                gameTimer.stop();
+                scoreHistory.addScore(scores.getCurrentScore());
             }
 
             if(mapManager.isGateOpened()){
                 Point head = snake.getHead();
-                if(mapManager.isGate(head.x, head.y)){
-                    JOptionPane.showMessageDialog(this, "Level Complete!");
+
+                if (mapManager.isGate(head.x, head.y)) {
+                    running = false;
+                    gameTimer.stop();
+                    scoreHistory.addScore(scores.getCurrentScore());
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Level Complete! Score: " + scores.getCurrentScore() +
+                                    " - Time: " + String.format("%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)
+                    );
                 }
             }
             repaint();
