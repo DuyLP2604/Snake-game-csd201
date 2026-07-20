@@ -23,43 +23,52 @@ public class PathFinder {
         int rows = map.length;
         int cols = map[0].length;
 
+        // mark visited location
         boolean[][] visited = new boolean[rows][cols];
+
+        // find path
         Point[][] parent = new Point[rows][cols];
 
         Queue<Point> queue = new LinkedList<>();
 
         queue.add(start);
+
+        // put the snake head to queue first
         visited[start.y][start.x] = true;
 
         while (!queue.isEmpty()) {
 
             Point current = queue.poll();
 
+            // if reach the food
             if (current.equals(goal)) {
                 return buildPath(parent, start, goal);
             }
 
+            // process a block in 4 direction
             for (int i = 0; i < 4; i++) {
 
                 int nx = current.x + DX[i];
                 int ny = current.y + DY[i];
 
+                // avoid going out the map
                 if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) {
                     continue;
                 }
 
+                // skip visited location
                 if (visited[ny][nx]) {
                     continue;
                 }
 
-                // if it is a blocked title
+                // skip if it is a blocked title
                 if (GameConfig.isObstacle(map[ny][nx])) {
                     continue;
                 }
 
                 Point next = new Point(nx, ny);
 
-                // Tránh thân rắn
+                // avoid the snake body
                 boolean onSnake = false;
 
                 for (Point bodyPart : snake.getBody()) {
@@ -74,6 +83,7 @@ public class PathFinder {
                     continue;
                 }
 
+                // mark as visited
                 visited[ny][nx] = true;
                 parent[ny][nx] = current;
 
