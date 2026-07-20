@@ -478,18 +478,40 @@ public class GamePanel extends JPanel implements KeyListener {
         boolean moved = snake.move(activeFoods, mapManager.getMap(), GameConfig.COLS, GameConfig.ROWS);
 
         if (!moved) {
-            Sound.play("music_gameover.wav");
+            Sound.play("music_hit.wav");
             snake.setDirectionDirect(oldDirection);
             history.pop();
         } else {
             // Nếu di chuyển thành công, kiểm tra xem có ăn mồi hay không
-            activeFoods.removeIf(f -> f.getX() == snake.getHead().x && f.getY() == snake.getHead().y);
-            if (activeFoods.size() < prevFoodCount) {
-                Sound.play("music_food.wav");
-                scores.increaseScore(1);
+            Food eatenFood = snake.getLastEatenFood();
+
+            if (eatenFood != null) {
+
+                switch (eatenFood.getType()) {
+
+                    case NORMAL:
+                        scores.increaseScore(1);
+                        Sound.play("music_food.wav");
+                        break;
+
+                    case BONUS:
+                        scores.increaseScore(2);
+                        Sound.play("music_bonus.wav");
+                        break;
+
+                    case SPEED:
+                        scores.increaseScore(1);
+                        Sound.play("music_speed.wav");
+                        break;
+
+                    case POISON:
+                        break;
+                }
+
+                activeFoods.remove(eatenFood);
+
                 mapManager.updateGate(scores.getCurrentScore());
 
-                // Spawn 1 quả mới
                 Food newFood = new Food(
                         GameConfig.COLS,
                         GameConfig.ROWS,
@@ -499,7 +521,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 newFood.spawn(
                         snake,
                         mapManager.getMap(),
-                        true, // normal fruit
+                        true,
                         activeFoods
                 );
 

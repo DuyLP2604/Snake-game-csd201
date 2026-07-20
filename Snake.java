@@ -17,7 +17,9 @@ public class Snake {
     private ImageIcon upmouth    = new ImageIcon("resources/upmouth.png");
     private ImageIcon downmouth  = new ImageIcon("resources/downmouth.png");
     private ImageIcon snakeimage = new ImageIcon("resources/snakeimage.png");
-    
+
+
+    private Food lastEatenFood;
     private List<Point> body;
     private int direction;
     private int speed;          
@@ -53,6 +55,10 @@ public class Snake {
     public boolean isAlive() { return alive; }
     public Point getHead() { return body.get(0); }
 
+    public Food getLastEatenFood() {
+        return lastEatenFood;
+    }
+
     public boolean move(List<Food> foods, int[][] map, int width, int height) {
         if (!alive) return false;
 
@@ -76,11 +82,16 @@ public class Snake {
 
         body.add(0, newHead);
 
+        lastEatenFood = null;
         // Duyệt ngược danh sách mồi để kiểm tra va chạm và xóa đi nếu bị ăn
+        lastEatenFood = null;
+
         for (int i = foods.size() - 1; i >= 0; i--) {
-            if (eat(foods.get(i))) {
-                foods.remove(i); // Ăn trúng thì xóa quả đó khỏi map
-                break; // Chỉ ăn 1 quả trong 1 bước di chuyển
+            Food food = foods.get(i);
+            if (eat(food)) {
+                lastEatenFood = food;
+                foods.remove(i);
+                break;
             }
         }
 

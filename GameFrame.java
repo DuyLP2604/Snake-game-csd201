@@ -8,7 +8,7 @@ public class GameFrame extends JFrame {
     private LevelSelectPanel levelSelectPanel;
 
     public GameFrame() {
-        setTitle("Snake Game OOP");
+        setTitle("Snake Game CSD201");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setSize(800, 600);

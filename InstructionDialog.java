@@ -13,7 +13,31 @@ public class InstructionDialog extends JDialog {
         super(parent, "Rules", true);
         this.parent = parent;
 
-        setSize(600,500);
+        ImageIcon normalFoodIcon = new ImageIcon(
+                getClass().getResource("resources/apple.png")
+        );
+
+        ImageIcon bonusFoodIcon = new ImageIcon(
+                getClass().getResource("resources/giftbox.png")
+        );
+
+        ImageIcon speedFoodIcon = new ImageIcon(
+                getClass().getResource("resources/speed.png")
+        );
+
+        ImageIcon poisonFoodIcon = new ImageIcon(
+                getClass().getResource("resources/poison.png")
+        );
+
+        ImageIcon gateIcon = new ImageIcon(
+                getClass().getResource("resources/gate.png")
+        );
+
+        ImageIcon timerIcon = new ImageIcon(
+                getClass().getResource("resources/timer.png")
+        );
+
+        setSize(600,570);
         setLocationRelativeTo(parent);
         setResizable(false);
 
@@ -35,21 +59,41 @@ public class InstructionDialog extends JDialog {
 
         Font font = new Font("Arial", Font.PLAIN, 16);
 
-        content.add(createRow(Color.RED, false, "Normal Food : +1 Score"));
-        content.add(createRow(Color.YELLOW, false, "Bonus Food : +2 Score"));
-        content.add(createRow(Color.CYAN, false, "Speed Food : +1 Score & Permanently Increase Speed"));
-        content.add(createRow(Color.MAGENTA, false, "Poison Food"));
         content.add(createRow(
-                Color.YELLOW,
-                true,
+                normalFoodIcon,
+                "Normal Food : +1 Score"
+        ));
+
+        content.add(createRow(
+                bonusFoodIcon,
+                "Bonus Food : +2 Score"
+        ));
+
+        content.add(createRow(
+                speedFoodIcon,
+                "Speed Food : +1 Score & Permanently Increase Speed"
+        ));
+
+        content.add(createRow(
+                poisonFoodIcon,
+                "Poison Food : Instant Death"
+        ));
+
+        content.add(createRow(
+                gateIcon,
                 "Gate : Opens at " + gateScore + " Points"
+        ));
+        content.add(createRow(timerIcon,
+                "Time Limit : " + GameConfig.LEVEL_TIME_LIMIT[level] + " Seconds"
         ));
 
 
         JLabel note = new JLabel(
                 "<html><b>NOTE</b><br>" +
                         "• Reach " + gateScore + " points to unlock the Gate.<br>" +
-                        "• Enter the Gate to complete the level.</html>");
+                        "• Enter the Gate to complete the level.<br>" +
+                        "• Complete the level before time runs out.</html>"
+        );
 
         note.setForeground(Color.WHITE);
         note.setFont(new Font("Arial", Font.PLAIN, 10));
@@ -83,38 +127,20 @@ public class InstructionDialog extends JDialog {
         setContentPane(panel);
     }
 
-    private JPanel createRow(Color color, boolean isGate, String text) {
+    private JPanel createRow(ImageIcon image, String text) {
 
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row.setBackground(new Color(20, 20, 35));
 
-        JPanel icon = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
+        Image scaledImage = image.getImage().getScaledInstance(
+                32,
+                32,
+                Image.SCALE_SMOOTH
+        );
 
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-
-                g2.setColor(color);
-
-                if (isGate) {
-                    g2.fillRect(4, 4, 20, 20);
-
-                    g2.setColor(Color.WHITE);
-                    g2.drawRect(4, 4, 20, 20);
-                } else {
-                    g2.fillOval(4, 4, 20, 20);
-
-                    g2.setColor(Color.WHITE);
-                    g2.drawOval(4, 4, 20, 20);
-                }
-            }
-        };
-
-        icon.setPreferredSize(new Dimension(28, 28));
-        icon.setOpaque(false);
+        JLabel icon = new JLabel(
+                new ImageIcon(scaledImage)
+        );
 
         JLabel label = new JLabel(text);
         label.setForeground(Color.WHITE);

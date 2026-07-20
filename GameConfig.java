@@ -28,9 +28,9 @@ public class GameConfig {
 
     public static final int[] LEVEL_TIME_LIMIT = {
             0,
-            200,    // Forest
-            150,     // Ocean
-            100      // Desert
+            100,    // Forest
+            135,     // Ocean
+            180      // Desert
     };
 
     /*
