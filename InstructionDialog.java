@@ -8,9 +8,8 @@ public class InstructionDialog extends JDialog {
     private final GameFrame parent;
 
     public InstructionDialog(GameFrame parent, int level) {
-        int gateScore = GameConfig.GATE_SCORES[level];
-
         super(parent, "Rules", true);
+        int gateScore = GameConfig.GATE_SCORES[level];
         this.parent = parent;
 
         ImageIcon normalFoodIcon = new ImageIcon(
