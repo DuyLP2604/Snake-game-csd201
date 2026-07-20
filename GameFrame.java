@@ -61,6 +61,41 @@ public class GameFrame extends JFrame {
         //switchToGamePanel();
         new InstructionDialog(this, selectedLevel).setVisible(true);
     }
+
+    public void showGoodbyeScreen() {
+
+        setContentPane(
+                new GoodbyePanel()
+        );
+
+        revalidate();
+        repaint();
+
+        javax.swing.Timer timer =
+                new javax.swing.Timer(
+                        1000,
+                        e -> System.exit(0)
+                );
+
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    public void showVictoryPanel(
+            int score,
+            String time) {
+
+        setContentPane(
+                new VictoryPanel(
+                        this,
+                        score,
+                        time
+                )
+        );
+
+        revalidate();
+        repaint();
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GameFrame::new);
     }

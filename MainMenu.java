@@ -96,7 +96,7 @@ public class MainMenu extends JPanel implements ActionListener {
                             "• Do NOT smash into walls or yourself!",
                     "SYSTEM GUIDE", JOptionPane.INFORMATION_MESSAGE);
         } else if (e.getSource() == exitButton) {
-            System.exit(0);
+            parentFrame.showGoodbyeScreen();
         }
     }
 

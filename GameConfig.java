@@ -26,6 +26,13 @@ public class GameConfig {
         return OBSTACLE_TILES.contains(tile);
     }
 
+    public static final int[] LEVEL_TIME_LIMIT = {
+            0,
+            200,    // Forest
+            150,     // Ocean
+            100      // Desert
+    };
+
     /*
         0 = Ground
         1 = Wall

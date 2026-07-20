@@ -3,9 +3,13 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.Timer;
 
 public class GamePanel extends JPanel implements KeyListener {
 
+    private int timeRemaining;
+    private Timer gameTimer;
+    private Timer countdownTimer;
 
     private List<Point> shortestPath = null;
     private int hintsRemaining = GameConfig.MAX_HINTS;
@@ -24,7 +28,6 @@ public class GamePanel extends JPanel implements KeyListener {
     private final ScoreManager scores;
     private final ScoreHistory scoreHistory = new ScoreHistory();
     private MapManager mapManager;
-    private javax.swing.Timer gameTimer;
     private int elapsedSeconds = 0;
 
     public GamePanel(GameFrame parent) {
@@ -53,6 +56,12 @@ public class GamePanel extends JPanel implements KeyListener {
 
     public void startGame() {
         Point start = mapManager.getSpawnPoint();
+        timeRemaining =
+                GameConfig.LEVEL_TIME_LIMIT[
+                        parent.getSelectedLevel()
+                        ];
+
+        startCountdown();
 
         snake = new Snake(
                 start,
@@ -253,6 +262,24 @@ public class GamePanel extends JPanel implements KeyListener {
                 55
         );
 
+        if (timeRemaining <= 10) {
+
+            if (timeRemaining % 2 == 0) {
+                g.setColor(Color.RED);
+            } else {
+                g.setColor(Color.WHITE);
+            }
+
+        } else {
+            g.setColor(Color.WHITE);
+        }
+
+        g.drawString(
+                "Time Left: " + timeRemaining + "s",
+                625,
+                55
+        );
+
         if (!running) {
             // Tô nền tối che màn hình chơi
             g.setColor(new Color(0, 0, 0, 180));
@@ -377,6 +404,9 @@ public class GamePanel extends JPanel implements KeyListener {
                 Sound.play("music_gameover.wav");
                 running = false;
                 gameTimer.stop();
+                if (countdownTimer != null) {
+                    countdownTimer.stop();
+                }
                 scoreHistory.addScore(scores.getCurrentScore());
             }
 
@@ -386,12 +416,19 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (mapManager.isGate(head.x, head.y)) {
                     running = false;
                     gameTimer.stop();
+                    if (countdownTimer != null) {
+                        countdownTimer.stop();
+                    }
                     scoreHistory.addScore(scores.getCurrentScore());
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Level Complete! Score: " + scores.getCurrentScore() +
-                                    " - Time: " + String.format("%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)
+                    parent.showVictoryPanel(
+                            scores.getCurrentScore(),
+                            String.format(
+                                    "%02d:%02d",
+                                    elapsedSeconds / 60,
+                                    elapsedSeconds % 60
+                            )
                     );
+                    Sound.play("music_victory.wav");
                 }
             }
             repaint();
@@ -472,5 +509,41 @@ public class GamePanel extends JPanel implements KeyListener {
 
         showHint = false;
         return moved;
+    }
+
+    private void startCountdown() {
+
+        if (countdownTimer != null) {
+            countdownTimer.stop();
+        }
+
+        countdownTimer = new Timer(
+                1000,
+                e -> {
+
+                    timeRemaining--;
+
+                    if (timeRemaining <= 0) {
+
+                        running = false;
+
+                        gameTimer.stop();
+
+                        if (countdownTimer != null) {
+                            countdownTimer.stop();
+                        }
+
+                        Sound.play("music_gameover.wav");
+
+                        scoreHistory.addScore(scores.getCurrentScore());
+
+                        repaint();
+                    }
+
+                    repaint();
+                }
+        );
+
+        countdownTimer.start();
     }
 }
