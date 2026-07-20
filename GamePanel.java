@@ -61,10 +61,9 @@ public class GamePanel extends JPanel implements KeyListener {
                 200
         );
         activeFoods.clear();
-        for (int i = 0; i < 120; i++) {
+        for (int i = 0; i < 5; i++) {
             Food f = new Food(GameConfig.COLS, GameConfig.ROWS, GameConfig.TILE_SIZE);
             f.spawn(snake, mapManager.getMap(), true, activeFoods); 
-            activeFoods.add(f);
             activeFoods.add(f);
         }
 
@@ -452,6 +451,22 @@ public class GamePanel extends JPanel implements KeyListener {
                 Sound.play("music_food.wav");
                 scores.increaseScore(1);
                 mapManager.updateGate(scores.getCurrentScore());
+
+                // Spawn 1 quả mới
+                Food newFood = new Food(
+                        GameConfig.COLS,
+                        GameConfig.ROWS,
+                        GameConfig.TILE_SIZE
+                );
+
+                newFood.spawn(
+                        snake,
+                        mapManager.getMap(),
+                        true, // normal fruit
+                        activeFoods
+                );
+
+                activeFoods.add(newFood);
             }
         }
 

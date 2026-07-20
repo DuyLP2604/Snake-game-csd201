@@ -142,11 +142,11 @@ public class MapManager {
         tileImages.put(8, tileSet.getRegion(521,632,546,660));   // WATER  - không có sprite nước trong pack sa mạc, dùng màu đặc
         tileImages.put(9, tileSet.getRegion(455,224,480,252));               // DECOR  - xương rồng nhỏ
         tileImages.put(10, tileSet.getRegion(329,420,355,447));   // TREE1  - góc trên bên trái cây dừa
-        tileImages.put(11, tileSet.getRegion(355,420,381,447));   // TREE2  - góc trên bên phải cây dừa
+        tileImages.put(11, tileSet.getRegion(355,420,375,447));   // TREE2  - góc trên bên phải cây dừa
         tileImages.put(12, tileSet.getRegion(329,444,355,471));   // TREE3  - góc dưới bên trái cây dừa
-        tileImages.put(13, tileSet.getRegion(355,444,381,471));   // TREE4  - góc dưới bên phải cây dừa
+        tileImages.put(13, tileSet.getRegion(355,444,375,471));   // TREE4  - góc dưới bên phải cây dừa
         tileImages.put(14, tileSet.getRegion(329,468,355,495));   // TREE4  - gốc cây bên trái cây dừa
-        tileImages.put(15, tileSet.getRegion(355,468,381,495));   // TREE4  - gốc cây bên phải cây dừa
+        tileImages.put(15, tileSet.getRegion(355,468,375,495));   // TREE4  - gốc cây bên phải cây dừa
     }
 
     public void updateGate(int score) {

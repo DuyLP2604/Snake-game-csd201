@@ -7,7 +7,9 @@ public class InstructionDialog extends JDialog {
 
     private final GameFrame parent;
 
-    public InstructionDialog(GameFrame parent) {
+    public InstructionDialog(GameFrame parent, int level) {
+        int gateScore = GameConfig.GATE_SCORES[level];
+
         super(parent, "Rules", true);
         this.parent = parent;
 
@@ -37,12 +39,16 @@ public class InstructionDialog extends JDialog {
         content.add(createRow(Color.YELLOW, false, "Bonus Food : +2 Score"));
         content.add(createRow(Color.CYAN, false, "Speed Food : +1 Score & Permanently Increase Speed"));
         content.add(createRow(Color.MAGENTA, false, "Poison Food"));
-        content.add(createRow(Color.YELLOW, true, "Gate : Opens at 20 Points"));
+        content.add(createRow(
+                Color.YELLOW,
+                true,
+                "Gate : Opens at " + gateScore + " Points"
+        ));
 
 
         JLabel note = new JLabel(
                 "<html><b>NOTE</b><br>" +
-                        "• Reach 20 points to unlock the Gate.<br>" +
+                        "• Reach " + gateScore + " points to unlock the Gate.<br>" +
                         "• Enter the Gate to complete the level.</html>");
 
         note.setForeground(Color.WHITE);
