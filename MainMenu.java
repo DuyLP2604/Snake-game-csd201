@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class MainMenu extends JPanel implements ActionListener {
-    private JButton startButton, aboutButton, exitButton;
+    private JButton startButton, aboutButton, historyButton, exitButton;
     private GameFrame parentFrame;
 
     // Bảng màu thiết kế tối giản Neon phẳng
@@ -30,6 +30,7 @@ public class MainMenu extends JPanel implements ActionListener {
         // Khởi tạo các nút bấm
         startButton = createModernButton("START GAME");
         aboutButton = createModernButton("About");
+        historyButton = createModernButton("History");
         exitButton = createModernButton("EXIT GAME");
 
         startButton.setBorder(new LineBorder(COLOR_TEXT_GREEN, 2));
@@ -37,6 +38,7 @@ public class MainMenu extends JPanel implements ActionListener {
 
         startButton.addActionListener(this);
         aboutButton.addActionListener(this);
+        historyButton.addActionListener(this);          
         exitButton.addActionListener(this);
 
         // Quy hoạch GridBagLayout độc lập theo từng dòng
@@ -54,8 +56,13 @@ public class MainMenu extends JPanel implements ActionListener {
         gbc.insets = new Insets(5, 0, 5, 0);
         add(aboutButton, gbc);
 
-        // Nút Exit
+        // Nút History
         gbc.gridy = 2;
+        gbc.insets = new Insets(5, 0, 5, 0);
+        add(historyButton, gbc);
+        
+        // Nút Exit
+        gbc.gridy = 3;
         gbc.insets = new Insets(5, 0, 5, 0);
         add(exitButton, gbc);
     }
@@ -88,6 +95,19 @@ public class MainMenu extends JPanel implements ActionListener {
             parentFrame.switchToLevelSelect();
         }else if (e.getSource() == aboutButton) {
             new AboutDialog(parentFrame).setVisible(true);
+        } else if (e.getSource() == historyButton) {
+            ScoreHistory scoreHistory = new ScoreHistory();
+            java.util.List<Integer> list = scoreHistory.getRecentScores();
+            StringBuilder sb = new StringBuilder("TOP 10 Kỷ lục gần nhất:\n\n");
+            if (list.isEmpty()) {
+                sb.append("Chưa có ván nào kết thúc.");
+            } else {
+                int i = 1;
+                for (int s : list) {
+                    sb.append("Ván ").append(i++).append(": ").append(s).append(" điểm\n");
+                }
+            }
+            JOptionPane.showMessageDialog(this, sb.toString(), "Lịch sử điểm số", JOptionPane.INFORMATION_MESSAGE);
         } else if (e.getSource() == exitButton) {
             parentFrame.showGoodbyeScreen();
         }
