@@ -16,7 +16,22 @@ public class PathFinder {
             MapManager mapManager) {
 
         Point start = snake.getHead();
-        Point goal = new Point(food.getX(), food.getY());
+        Point goal;
+
+        if (mapManager.isGateOpened()) {
+
+            goal = new Point(
+                    mapManager.getGatePoint().x + 1,
+                    mapManager.getGatePoint().y + 1
+            );
+
+        } else {
+
+            goal = new Point(
+                    food.getX(),
+                    food.getY()
+            );
+        }
 
         int[][] map = mapManager.getMap();
 

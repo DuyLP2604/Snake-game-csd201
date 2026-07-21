@@ -29,7 +29,7 @@ public class InstructionDialog extends JDialog {
         );
 
         ImageIcon gateIcon = new ImageIcon(
-                getClass().getResource("resources/fruit/gate.png")
+                getClass().getResource("resources/fruit/gate_closed.png")
         );
 
         ImageIcon timerIcon = new ImageIcon(

@@ -13,7 +13,11 @@ public class MapManager {
     private TileSet tileSet;
     // Ánh xạ loại ô (0-9, xem TileType.java) sang ảnh sprite đã cắt sẵn
     private HashMap<Integer, BufferedImage> tileImages;
-    private Image gateImage = new ImageIcon("resources/fruit/gate.png").getImage();
+    private Image gateClosedImage =
+            new ImageIcon("resources/fruit/gate_closed.png").getImage();
+
+    private Image gateOpenImage =
+            new ImageIcon("resources/fruit/gate_open.png").getImage();
     public MapManager(int level) {
         tileImages = new HashMap<>();
         loadTileSet(level);
@@ -159,7 +163,15 @@ public class MapManager {
     }
 
     public void updateGate(int score) {
-        gateOpened = score >= GameConfig.getGateScore(currentLevel);
+
+        boolean oldState = gateOpened;
+
+        gateOpened =
+                score >= GameConfig.getGateScore(currentLevel);
+
+        if (!oldState && gateOpened) {
+            Sound.play("gate_open.wav");
+        }
     }
 
     public boolean isGateOpened() {
@@ -233,8 +245,18 @@ public class MapManager {
             
             int gateSizeMultiplier = 3; 
             int bigSize = GameConfig.TILE_SIZE * gateSizeMultiplier;
-            
-            g.drawImage(gateImage, gateX, gateY, bigSize, bigSize, null);
+
+            Image currentGateImage =
+                    gateOpened ? gateOpenImage : gateClosedImage;
+
+            g.drawImage(
+                    currentGateImage,
+                    gateX,
+                    gateY,
+                    bigSize,
+                    bigSize,
+                    null
+            );
         }
     }
 }

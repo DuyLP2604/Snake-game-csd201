@@ -16,8 +16,12 @@ public class GameFrame extends JFrame {
 
         // Tạo menu đầu tiên
         menuPanel = new MainMenu(this);
-        setContentPane(menuPanel);
+
+        setContentPane(
+                new IntroPanel(this)
+        );
         setVisible(true);
+        repaint();
     }
     public void setSelectedLevel(int level) {
         this.selectedLevel = level;

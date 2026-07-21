@@ -355,7 +355,6 @@ public class GamePanel extends JPanel implements KeyListener {
         // Show hint
         if (k == KeyEvent.VK_H) {
             if (hintsRemaining > 0) {
-                // ĐÃ SỬA: Tìm trái cây gần nhất để dẫn đường
                 Food targetFood = null;
                 double minDist = Double.MAX_VALUE;
                 for (Food f : activeFoods) {
@@ -369,7 +368,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
 
                 List<Point> path = PathFinder.findPath(snake, targetFood, mapManager);
-
+                Sound.play("hint.wav");
                 if (path != null && !path.isEmpty()) {
                     shortestPath = path;
                     showHint = true;
