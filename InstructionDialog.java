@@ -2,7 +2,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-
 public class InstructionDialog extends JDialog {
 
     private final GameFrame parent;
@@ -13,23 +12,24 @@ public class InstructionDialog extends JDialog {
         this.parent = parent;
 
         ImageIcon normalFoodIcon = new ImageIcon(
-                getClass().getResource("resources/apple.png")
+
+                getClass().getResource("resources/fruit/apple.png")
         );
 
         ImageIcon bonusFoodIcon = new ImageIcon(
-                getClass().getResource("resources/giftbox.png")
+                getClass().getResource("resources/fruit/giftbox.png")
         );
 
         ImageIcon speedFoodIcon = new ImageIcon(
-                getClass().getResource("resources/speed.png")
+                getClass().getResource("resources/fruit/speed.png")
         );
 
         ImageIcon poisonFoodIcon = new ImageIcon(
-                getClass().getResource("resources/poison.png")
+                getClass().getResource("resources/fruit/poison.png")
         );
 
         ImageIcon gateIcon = new ImageIcon(
-                getClass().getResource("resources/gate.png")
+                getClass().getResource("resources/fruit/gate.png")
         );
 
         ImageIcon timerIcon = new ImageIcon(
