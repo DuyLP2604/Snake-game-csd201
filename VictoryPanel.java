@@ -8,8 +8,22 @@ public class VictoryPanel extends JPanel {
             int score,
             String time) {
 
+        ImageIcon logoIcon = new ImageIcon(
+                getClass().getResource("/resources/background/snakelogo.png")
+        );
+
+        Image scaledImage = logoIcon.getImage().getScaledInstance(
+                460, 280,
+                Image.SCALE_SMOOTH
+        );
+
+        logoIcon = new ImageIcon(scaledImage);
+
         setLayout(new BorderLayout());
         setBackground(new Color(18,18,24));
+
+        JLabel logoLabel = new JLabel(logoIcon);
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JLabel title =
                 new JLabel(
@@ -47,8 +61,20 @@ public class VictoryPanel extends JPanel {
         bottom.setBackground(getBackground());
         bottom.add(menuBtn);
 
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(getBackground());
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        info.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        centerPanel.add(Box.createVerticalStrut(20));
+        centerPanel.add(logoLabel);
+        centerPanel.add(Box.createVerticalStrut(20));
+        centerPanel.add(info);
+
         add(title, BorderLayout.NORTH);
-        add(info, BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
         add(bottom, BorderLayout.SOUTH);
     }
 }
