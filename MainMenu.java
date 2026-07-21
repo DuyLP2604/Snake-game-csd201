@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class MainMenu extends JPanel implements ActionListener {
-    private JButton startButton, helpButton, exitButton;
+    private JButton startButton, aboutButton, exitButton;
     private GameFrame parentFrame;
 
     // Bảng màu thiết kế tối giản Neon phẳng
@@ -22,21 +22,21 @@ public class MainMenu extends JPanel implements ActionListener {
         this.parentFrame = frame;
 
         // Tải hình ảnh (Yêu cầu 2 file này nằm cùng thư mục gốc của project)
-        backgroundImage = new ImageIcon("resources/background.jpg").getImage();
-        logoImage = new ImageIcon("resources/snakelogo.png").getImage();
+        backgroundImage = new ImageIcon("resources/background/background.jpg").getImage();
+        logoImage = new ImageIcon("resources/background/snakelogo.png").getImage();
 
         setLayout(new GridBagLayout());
         
         // Khởi tạo các nút bấm
         startButton = createModernButton("START GAME");
-        helpButton = createModernButton("HOW TO PLAY");
+        aboutButton = createModernButton("About");
         exitButton = createModernButton("EXIT GAME");
 
         startButton.setBorder(new LineBorder(COLOR_TEXT_GREEN, 2));
         startButton.setForeground(COLOR_TEXT_GREEN);
 
         startButton.addActionListener(this);
-        helpButton.addActionListener(this);
+        aboutButton.addActionListener(this);
         exitButton.addActionListener(this);
 
         // Quy hoạch GridBagLayout độc lập theo từng dòng
@@ -49,10 +49,10 @@ public class MainMenu extends JPanel implements ActionListener {
         gbc.insets = new Insets(250, 0, 5, 0);
         add(startButton, gbc);
 
-        // Nút Help
+        // Nút About
         gbc.gridy = 1;
         gbc.insets = new Insets(5, 0, 5, 0);
-        add(helpButton, gbc);
+        add(aboutButton, gbc);
 
         // Nút Exit
         gbc.gridy = 2;
@@ -86,19 +86,13 @@ public class MainMenu extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startButton) {
             parentFrame.switchToLevelSelect();
-        } else if (e.getSource() == helpButton) {
-            UIManager.put("OptionPane.background", COLOR_BG);
-            UIManager.put("Panel.background", COLOR_BG);
-            UIManager.put("OptionPane.messageForeground", Color.WHITE);
-            JOptionPane.showMessageDialog(this,
-                    "• Use ARROW KEYS to navigate the snake.\n" +
-                            "• Eat food on the field to grow up.\n" +
-                            "• Do NOT smash into walls or yourself!",
-                    "SYSTEM GUIDE", JOptionPane.INFORMATION_MESSAGE);
+        }else if (e.getSource() == aboutButton) {
+            new AboutDialog(parentFrame).setVisible(true);
         } else if (e.getSource() == exitButton) {
             parentFrame.showGoodbyeScreen();
         }
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {

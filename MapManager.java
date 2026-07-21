@@ -13,7 +13,7 @@ public class MapManager {
     private TileSet tileSet;
     // Ánh xạ loại ô (0-9, xem TileType.java) sang ảnh sprite đã cắt sẵn
     private HashMap<Integer, BufferedImage> tileImages;
-    private Image gateImage = new ImageIcon("resources/gate.png").getImage();
+    private Image gateImage = new ImageIcon("resources/fruit/gate.png").getImage();
     public MapManager(int level) {
         tileImages = new HashMap<>();
         loadTileSet(level);

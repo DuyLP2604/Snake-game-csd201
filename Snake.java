@@ -11,12 +11,12 @@ public class Snake {
     public static final int DOWN = 2;
     public static final int LEFT = 3;
     
-    // Load 5 file ảnh của bạn vào game
-    private ImageIcon rightmouth = new ImageIcon("resources/rightmouth.png");
-    private ImageIcon leftmouth  = new ImageIcon("resources/leftmouth.png");
-    private ImageIcon upmouth    = new ImageIcon("resources/upmouth.png");
-    private ImageIcon downmouth  = new ImageIcon("resources/downmouth.png");
-    private ImageIcon snakeimage = new ImageIcon("resources/snakeimage.png");
+    // Load 5 file picture
+    private ImageIcon rightmouth = new ImageIcon("resources/snake/rightmouth.png");
+    private ImageIcon leftmouth  = new ImageIcon("resources/snake/leftmouth.png");
+    private ImageIcon upmouth    = new ImageIcon("resources/snake/upmouth.png");
+    private ImageIcon downmouth  = new ImageIcon("resources/snake/downmouth.png");
+    private ImageIcon snakeimage = new ImageIcon("resources/snake/snakeimage.png");
 
 
     private Food lastEatenFood;
