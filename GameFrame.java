@@ -37,6 +37,7 @@ public class GameFrame extends JFrame {
 
     // Hàm quay lại menu 
     public void switchToMenu() {
+        Sound.stopBackground();
         setContentPane(menuPanel);
         revalidate();
         menuPanel.requestFocusInWindow();

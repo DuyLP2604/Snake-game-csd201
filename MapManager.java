@@ -20,6 +20,15 @@ public class MapManager {
         loadMap(level);
         findSpecialTiles();
         this.currentLevel = level;
+
+        switch (level) {
+            case 1: Sound.playBackground("forest_backgound_music.wav");
+                    break;
+            case 2: Sound.playBackground("ocean_backgound_music.wav");
+                    break;
+            case 3: Sound.playBackground("desert_backgound_music.wav");
+                    break;
+        }
     }
 
     private void loadMap(int level) {
