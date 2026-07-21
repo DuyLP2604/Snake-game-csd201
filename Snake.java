@@ -12,12 +12,23 @@ public class Snake {
     public static final int LEFT = 3;
     
     // Load 5 file ảnh của bạn vào game
+<<<<<<< Updated upstream
     private ImageIcon rightmouth = new ImageIcon("resources/rightmouth.png");
     private ImageIcon leftmouth  = new ImageIcon("resources/leftmouth.png");
     private ImageIcon upmouth    = new ImageIcon("resources/upmouth.png");
     private ImageIcon downmouth  = new ImageIcon("resources/downmouth.png");
     private ImageIcon snakeimage = new ImageIcon("resources/snakeimage.png");
     
+=======
+    private ImageIcon rightmouth = new ImageIcon("resources/snake/rightmouth.png");
+    private ImageIcon leftmouth  = new ImageIcon("resources/snake/leftmouth.png");
+    private ImageIcon upmouth    = new ImageIcon("resources/snake/upmouth.png");
+    private ImageIcon downmouth  = new ImageIcon("resources/snake/downmouth.png");
+    private ImageIcon snakeimage = new ImageIcon("resources/snake/snakeimage.png");
+
+
+    private Food lastEatenFood;
+>>>>>>> Stashed changes
     private List<Point> body;
     private int direction;
     private int speed;          

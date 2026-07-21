@@ -14,18 +14,19 @@ public class Food {
     private static final long LIFE_POISON_MS = 20_000;  // 20 giây
 
     private static final Image[] FRUIT_IMAGES = {
-        new ImageIcon("resources/orange.png").getImage(),
-        new ImageIcon("resources/lemon.png").getImage(),
-        new ImageIcon("resources/strawberry.png").getImage(),
-        new ImageIcon("resources/grapes.png").getImage(),
-        new ImageIcon("resources/grape.png").getImage(),
-        new ImageIcon("resources/banana.png").getImage(),
-        new ImageIcon("resources/apple.png").getImage(),
-        new ImageIcon("resources/melon.png").getImage()
+        new ImageIcon("resources/fruit/orange.png").getImage(),
+        new ImageIcon("resources/fruit/lemon.png").getImage(),
+        new ImageIcon("resources/fruit/strawberry.png").getImage(),
+        new ImageIcon("resources/fruit/grapes.png").getImage(),
+        new ImageIcon("resources/fruit/grape.png").getImage(),
+        new ImageIcon("resources/fruit/banana.png").getImage(),
+        new ImageIcon("resources/fruit/apple.png").getImage(),
+        new ImageIcon("resources/fruit/melon.png").getImage()
     };
-    private static final Image BONUS_IMAGE  = new ImageIcon("resources/giftbox.png").getImage();
-    private static final Image SPEED_IMAGE  = new ImageIcon("resources/speed.png").getImage();
-    private static final Image POISON_IMAGE = new ImageIcon("resources/poison.png").getImage();
+    private static final Image BONUS_IMAGE  = new ImageIcon("resources/fruit/giftbox.png").getImage();
+    private static final Image SPEED_IMAGE  = new ImageIcon("resources/fruit/speed.png").getImage();
+    private static final Image POISON_IMAGE = new ImageIcon("resources/fruit/poison.png").getImage();
+
 
     private int x, y, tileSize;
     private FoodType type;
